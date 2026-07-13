@@ -3,12 +3,21 @@
   const header = document.querySelector('.site-header');
   const toggle = document.querySelector('.nav-toggle');
   const nav    = document.querySelector('.main-nav');
+  const film   = document.getElementById('film'); // present only on the home page
 
-  // Solid header on scroll (index has a transparent-over-hero header).
+  // Header stays transparent over the video hero, then turns solid white once
+  // you scroll past the film into the content. On inner pages (no film) it
+  // turns solid after a small scroll.
   function onScroll() {
     if (!header) return;
-    if (window.scrollY > 40) header.classList.add('scrolled');
-    else header.classList.remove('scrolled');
+    let solid;
+    if (film) {
+      const hH = header.offsetHeight || 74;
+      solid = window.scrollY > (film.offsetHeight - hH - 4);
+    } else {
+      solid = window.scrollY > 40;
+    }
+    header.classList.toggle('scrolled', solid);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

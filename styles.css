@@ -128,7 +128,13 @@ a { color: inherit; text-decoration: none; }
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
 }
-/* Transparent header over dark hero (index top) */
+/* Transparent header over dark hero (index top).
+   A soft top gradient keeps the logo/nav legible over any video frame,
+   without the hard white bar. It disappears once .scrolled (past the film). */
+.site-header.on-hero:not(.scrolled)::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(3,8,15,.6) 0%, rgba(3,8,15,.25) 60%, rgba(3,8,15,0) 100%);
+}
 .site-header.on-hero:not(.scrolled) { color: #fff; }
 .site-header.on-hero:not(.scrolled) .logo .name { color: #fff; }
 .site-header.on-hero:not(.scrolled) .logo .name b { color: #bfe0ff; }
