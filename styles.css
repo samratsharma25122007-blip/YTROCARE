@@ -249,6 +249,8 @@ body.has-fixed-header { padding-top: 0; }
   pointer-events: none;
 }
 .cta-band .container { position: relative; z-index: 1; }
+/* When an animated shader canvas is mounted, drop the static radial glow. */
+.cta-band[data-shader-bg]::after { display: none; }
 
 /* ---------------- Footer ---------------- */
 .site-footer { background: var(--black); color: #b9c8db; padding: 66px 0 26px; }
