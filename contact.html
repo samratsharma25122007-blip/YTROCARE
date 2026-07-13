@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Service / Contact — RO Care India</title>
+  <meta name="description" content="Book your RO service with RO Care India in under a minute, or reach us by phone, email or WhatsApp. We call you right back to confirm." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header solid" id="siteHeader">
+    <div class="container">
+      <a class="logo" href="index.html">
+        <span class="mark">💧</span>
+        <span class="name"><b>RO</b> Care India<span>We Care Your Water</span></span>
+      </a>
+      <nav class="main-nav" id="mainNav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <div class="header-cta">
+        <a class="header-phone" href="tel:+919876543210">📞 +91 98765 43210</a>
+        <a class="btn btn-primary" href="#book">Book Service Now</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="crumbs"><a href="index.html">Home</a> / Contact</div>
+      <h1>Book your RO service</h1>
+      <p>Fill in the quick form below and our team will call you back to confirm a convenient time slot. It takes less than a minute.</p>
+    </div>
+  </section>
+
+  <!-- BOOKING + CONTACT -->
+  <section class="section" id="book">
+    <div class="container">
+      <div class="split" style="align-items:flex-start">
+
+        <!-- Booking form -->
+        <div class="reveal">
+          <span class="eyebrow">Service request</span>
+          <h2 class="section-title" style="margin-bottom:26px">Tell us what you need</h2>
+
+          <div class="form-card">
+            <div class="form-success" id="formSuccess"></div>
+            <form id="bookingForm" novalidate>
+              <div class="field">
+                <label for="bkName">Full name *</label>
+                <input type="text" id="bkName" name="name" placeholder="e.g. Priya Sharma" required />
+              </div>
+              <div class="field row">
+                <div class="field">
+                  <label for="bkPhone">Phone number *</label>
+                  <input type="tel" id="bkPhone" name="phone" placeholder="+91 98765 43210" required />
+                </div>
+                <div class="field">
+                  <label for="bkCity">City / Area *</label>
+                  <input type="text" id="bkCity" name="city" placeholder="e.g. Noida" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="bkAddress">Address</label>
+                <input type="text" id="bkAddress" name="address" placeholder="House / flat, street, landmark" />
+              </div>
+              <div class="field row">
+                <div class="field">
+                  <label for="bkService">Service needed *</label>
+                  <select id="bkService" name="service" required>
+                    <option value="">Select a service…</option>
+                    <option>RO Service &amp; Repair</option>
+                    <option>New Installation</option>
+                    <option>Filter / Membrane Replacement</option>
+                    <option>AMC Plan</option>
+                    <option>Commercial / Industrial RO</option>
+                    <option>Water Testing</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="bkBrand">Purifier brand</label>
+                  <input type="text" id="bkBrand" name="brand" placeholder="e.g. Kent, Aquaguard, Livpure" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="bkNotes">Describe the issue (optional)</label>
+                <textarea id="bkNotes" name="notes" rows="3" placeholder="e.g. Low water flow / strange taste / no water"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Request my service →</button>
+              <p class="form-note">By submitting, you agree to be contacted about your service request. We’ll call to confirm the visit and pricing.</p>
+            </form>
+          </div>
+        </div>
+
+        <!-- Contact info -->
+        <div class="reveal">
+          <span class="eyebrow">Other ways to reach us</span>
+          <h2 class="section-title" style="margin-bottom:26px">Prefer to talk?</h2>
+
+          <div class="card" style="margin-bottom:18px">
+            <div class="ic">📞</div>
+            <h3>Call / WhatsApp</h3>
+            <p><a href="tel:+919876543210" style="color:var(--blue);font-weight:700">+91 98765 43210</a><br />Mon–Sun · 8 AM – 9 PM</p>
+          </div>
+          <div class="card" style="margin-bottom:18px">
+            <div class="ic">✉️</div>
+            <h3>Email us</h3>
+            <p><a href="mailto:hello@rocareindia.example" style="color:var(--blue);font-weight:700">hello@rocareindia.example</a><br />We reply within a few hours.</p>
+          </div>
+          <div class="card">
+            <div class="ic">📍</div>
+            <h3>Service area</h3>
+            <p>Serving homes, offices and industrial plants across the city and nearby regions.</p>
+          </div>
+
+          <!-- Map placeholder — drop in a Google Maps embed when ready -->
+          <div class="img-slot" style="margin-top:18px;min-height:220px">
+            🗺️&nbsp; Map embed goes here<br /><small style="font-weight:500;opacity:.8">(add your Google Maps iframe)</small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section tight cta-band">
+    <div class="container center">
+      <h2 class="section-title on-dark reveal">Water can’t wait — and neither should you</h2>
+      <p class="lead on-dark reveal" style="margin:14px auto 30px">Book now and get your purifier back to peak purity.</p>
+      <a class="btn btn-primary btn-lg reveal" href="#book">Back to booking ↑</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="cols">
+        <div>
+          <div class="brand-line"><span class="mark">💧</span><span style="font-weight:800;font-size:19px;color:#fff"><b style="color:var(--blue-bright)">RO</b> Care India</span></div>
+          <p>We Care Your Water. Expert RO service, repair, installation and AMC for homes, offices and industrial plants.</p>
+          <div class="social"><a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">◎</a><a href="#" aria-label="WhatsApp">✆</a></div>
+        </div>
+        <div><h4>Company</h4><a href="index.html">Home</a><a href="about.html">About Us</a><a href="services.html">Services</a><a href="contact.html">Contact</a></div>
+        <div><h4>Services</h4><a href="services.html">RO Service &amp; Repair</a><a href="services.html">Installation</a><a href="services.html">AMC Plans</a><a href="services.html">Commercial RO</a></div>
+        <div><h4>Get in touch</h4><a href="tel:+919876543210">📞 +91 98765 43210</a><a href="mailto:hello@rocareindia.example">✉ hello@rocareindia.example</a><a href="#book">📅 Book a service</a><p style="margin-top:10px">Mon–Sun · 8 AM – 9 PM</p></div>
+      </div>
+      <div class="footer-bottom"><span>© <span id="year"></span> RO Care India. All rights reserved.</span><span>Made with 💧 for cleaner water.</span></div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
