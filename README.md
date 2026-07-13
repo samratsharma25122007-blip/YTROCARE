@@ -1,40 +1,82 @@
-# 🎬 Video → Website
+# AutoCare — Premium RO Servicing Website
 
-Upload a video, get a website.
+An award-winning-grade, cinematic marketing site for **AutoCare**, an RO water
+purifier servicing company. Built to feel like the launch of a luxury technology
+product — Apple × Nothing × Dyson × Tesla — not a typical service business site.
 
-## Quick start
+## ✨ Highlights
 
-1. **Put your video** in the [`uploads/`](uploads/) folder
-   (e.g. `uploads/my-video.mp4`).
-2. **Tell me** (Claude) the file name and what you want, e.g.
-   *"I uploaded `demo.mp4` — make a landing page for my product."*
-   I'll build a custom site for you in [`website/`](website/).
+- **Scroll-controlled video story** — the hero story video's timeline is scrubbed
+  directly by scroll (forward on scroll-down, reverse on scroll-up) inside a
+  pinned section. No autoplay, no play button, no loop. Captions cross-fade and
+  the background evolves from bright white to deep ink as the purifier ages.
+- **Buttery smooth** — Lenis smooth scroll wired into a single GSAP ticker so
+  ScrollTrigger, the video scrubber and every pinned section stay in sync at ~60fps.
+- **Handcrafted sections** — interactive exploded purifier, before/after
+  comparison slider, animated service timeline, glassmorphism review carousel,
+  accordion FAQ, and a staged final CTA.
+- **Book Service page** — full booking form with an elegant success animation.
+- Fully **responsive** and **reduced-motion aware**.
 
-### Or build it yourself with one command
+## 🧱 Tech stack
+
+- **Next.js 15** (App Router) + **TypeScript**
+- **Tailwind CSS**
+- **GSAP + ScrollTrigger** (scroll scrubbing & pinning)
+- **Framer Motion** (micro-interactions & reveals)
+- **Lenis** (smooth scroll)
+- **Inter** via `next/font`
+
+No unnecessary libraries.
+
+## 🚀 Getting started
 
 ```bash
-python build.py                          # uses the first video in uploads/
-python build.py my-video.mp4 \
-    --title "My Product" \
-    --tagline "The future is here"
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Then open **`website/index.html`** in a browser.
+Build for production:
 
-## Folder layout
-
-```
-.
-├── uploads/          ← put your video file(s) here
-├── website/          ← the generated website (open index.html)
-│   └── assets/       ← your video gets copied here
-├── build.py          ← generates the site from a video
-└── README.md
+```bash
+npm run build && npm start
 ```
 
-## Notes
+## 🎬 Add your story video
 
-- Best format for the web is **`.mp4` (H.264)**. `.mov`/`.avi`/`.mkv` may not
-  play in every browser — convert with `ffmpeg -i input.mov output.mp4`.
-- The more detail you give me about what's in the video (or a transcript),
-  the richer the copy and sections I can generate to match it.
+Drop your rendered clip at **`public/videos/ro-story.mp4`**.
+See [`public/videos/README.md`](public/videos/README.md) for the exact ffmpeg
+encoding (dense keyframes) that makes scroll-scrubbing perfectly smooth.
+
+> Until the video is added, the story section gracefully falls back to a
+> CSS-animated "ageing purifier" so the site is fully functional out of the box.
+
+## 📁 Structure
+
+```
+app/
+  layout.tsx            # fonts, smooth scroll, navbar, footer, progress rail
+  page.tsx              # home — assembles every section
+  book/page.tsx         # Book Service page
+components/
+  layout/               # SmoothScroll (Lenis+GSAP), Navbar, Footer
+  hero/                 # Hero
+  sections/             # ScrollVideoStory + sections 2–9 + FinalCTA
+  book/                 # BookForm
+  ui/                   # Button, Reveal, ScrollProgress, Particles, Icons, Logo…
+lib/
+  data.ts               # all copy/content in one place
+  gsap.ts               # GSAP + ScrollTrigger registration
+```
+
+## 🎨 Design tokens
+
+| Token | Value |
+|-------|-------|
+| Brand blue | `#005CFF` |
+| Ink | `#071320` |
+| Black | `#111111` |
+| White | `#FFFFFF` |
+| Cyan glow | `#5FD3FF` |
+
+Typography: **Inter**, large scale, tight tracking, generous whitespace.
