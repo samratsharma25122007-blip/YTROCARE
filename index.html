@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Video Website Builder</title>
+  <title>Scroll Video Landing Page</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,189 +17,139 @@
       --border: #263056;
     }
 
+    html { scroll-behavior: auto; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
     }
 
-    /* ---------- Builder bar (top control panel) ---------- */
+    /* ---------- Upload panel (shown until a video is chosen) ---------- */
     .builder {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
       background: var(--panel);
       border-bottom: 1px solid var(--border);
-      padding: 20px 24px;
+      padding: 14px 20px;
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 14px;
       align-items: center;
+      transition: transform .4s ease, opacity .4s ease;
     }
+    .builder.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
     .builder h1 {
-      font-size: 18px;
+      font-size: 16px;
       margin-right: auto;
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      background-clip: text;
+      -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .field label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-    }
-    .field input[type="text"] {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      min-width: 200px;
     }
     .upload-btn {
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform .1s ease, opacity .2s ease;
+      color: #fff; border: none;
+      padding: 11px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: transform .1s ease;
     }
     .upload-btn:hover { transform: translateY(-1px); }
-    .upload-btn:active { transform: translateY(0); }
     input[type="file"] { display: none; }
     .filename { font-size: 12px; color: var(--muted); }
 
-    /* ---------- Generated website preview ---------- */
-    .site { display: none; }
-    .site.active { display: block; }
-
-    .hero {
-      position: relative;
-      min-height: 70vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      text-align: center;
+    /* ---------- Empty state ---------- */
+    .empty {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; color: var(--muted); padding: 24px;
     }
-    .hero video {
+    .empty .icon { font-size: 64px; margin-bottom: 16px; }
+    .empty.hidden { display: none; }
+
+    /* ---------- Scroll-scrub stage ---------- */
+    /* The tall .scroll-track creates scroll distance; the .sticky layer
+       stays pinned in the viewport while the video is scrubbed by scroll. */
+    #stage { display: none; }
+    #stage.active { display: block; }
+
+    .scroll-track { position: relative; }
+
+    .sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+    .sticky video {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 0;
     }
-    .hero .overlay {
+    .vignette {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(11,16,32,.35), transparent 25%, transparent 70%, rgba(11,16,32,.75));
+      pointer-events: none;
+    }
+
+    /* Text captions pinned over the video, fading in at scroll milestones */
+    .captions { position: absolute; inset: 0; pointer-events: none; }
+    .caption {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(11,16,32,.35), rgba(11,16,32,.85));
-      z-index: 1;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: min(820px, 90vw);
+      opacity: 0;
+      transition: opacity .3s ease;
     }
-    .hero .content {
-      position: relative;
-      z-index: 2;
-      padding: 40px 24px;
-      max-width: 820px;
+    .caption.show { opacity: 1; }
+    .caption h2 { font-size: clamp(32px, 6vw, 64px); line-height: 1.05; margin-bottom: 12px; }
+    .caption p  { font-size: clamp(16px, 2.4vw, 22px); color: var(--muted); }
+
+    /* Scroll hint + progress bar */
+    .hint {
+      position: fixed;
+      left: 50%; bottom: 26px;
+      transform: translateX(-50%);
+      z-index: 20;
+      color: var(--text);
+      font-size: 13px; letter-spacing: .04em;
+      opacity: .85;
+      transition: opacity .3s ease;
+      pointer-events: none;
+      text-align: center;
     }
-    .hero h2 {
-      font-size: clamp(32px, 6vw, 64px);
-      line-height: 1.05;
-      margin-bottom: 16px;
-    }
-    .hero p {
-      font-size: clamp(16px, 2.5vw, 22px);
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-    .cta {
-      display: inline-block;
+    .hint .chev { display: block; font-size: 20px; animation: bob 1.4s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+    .hint.gone { opacity: 0; }
+
+    .progress {
+      position: fixed;
+      left: 0; top: 0;
+      height: 3px; width: 0%;
+      z-index: 40;
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: #fff;
-      padding: 14px 32px;
-      border-radius: 999px;
-      font-weight: 600;
-      text-decoration: none;
+      transition: width .05s linear;
     }
 
-    /* ---------- Watch section with full player ---------- */
-    .watch {
-      padding: 64px 24px;
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: center;
+    .loading {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 30; color: var(--muted); background: #000;
     }
-    .watch h3 {
-      font-size: 28px;
-      margin-bottom: 24px;
-    }
-    .player-wrap {
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #000;
-    }
-    .player-wrap video { width: 100%; display: block; }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px 64px;
-    }
-    .feature {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-    }
-    .feature h4 { margin-bottom: 8px; font-size: 18px; }
-    .feature p { color: var(--muted); font-size: 14px; line-height: 1.5; }
-
-    footer {
-      text-align: center;
-      padding: 32px;
-      color: var(--muted);
-      font-size: 13px;
-      border-top: 1px solid var(--border);
-    }
-
-    /* ---------- Empty state ---------- */
-    .empty {
-      text-align: center;
-      padding: 100px 24px;
-      color: var(--muted);
-    }
-    .empty .icon { font-size: 64px; margin-bottom: 16px; }
+    .loading.show { display: flex; }
   </style>
 </head>
 <body>
 
-  <!-- Control panel: upload a video + set website text -->
-  <div class="builder">
-    <h1>🎬 Video Website Builder</h1>
-
-    <div class="field">
-      <label for="title">Website Title</label>
-      <input type="text" id="title" value="My Awesome Video" />
-    </div>
-
-    <div class="field">
-      <label for="tagline">Tagline</label>
-      <input type="text" id="tagline" value="Built from a single video upload." />
-    </div>
-
+  <!-- Upload panel -->
+  <div class="builder" id="builder">
+    <h1>🎬 Scroll Video Landing Page</h1>
     <label class="upload-btn">
       Upload Video
       <input type="file" id="videoInput" accept="video/*" />
@@ -207,89 +157,116 @@
     <span class="filename" id="filename">No video selected</span>
   </div>
 
-  <!-- Empty state before a video is uploaded -->
+  <!-- Empty state -->
   <div class="empty" id="empty">
     <div class="icon">📹</div>
-    <p>Upload a video above to instantly generate your website.</p>
+    <p>Upload a video, then scroll.<br />Scrolling down plays it forward — scrolling up reverses it.</p>
   </div>
 
-  <!-- Generated website (hidden until a video is uploaded) -->
-  <div class="site" id="site">
-    <section class="hero">
-      <video id="heroVideo" autoplay muted loop playsinline></video>
-      <div class="overlay"></div>
-      <div class="content">
-        <h2 id="heroTitle">My Awesome Video</h2>
-        <p id="heroTagline">Built from a single video upload.</p>
-        <a href="#watch" class="cta">Watch Now</a>
-      </div>
-    </section>
+  <!-- Scroll-scrub stage -->
+  <div id="stage">
+    <div class="progress" id="progress"></div>
+    <div class="loading" id="loading">Preparing video…</div>
 
-    <section class="watch" id="watch">
-      <h3>Watch the full video</h3>
-      <div class="player-wrap">
-        <video id="mainVideo" controls></video>
+    <div class="scroll-track" id="track">
+      <div class="sticky">
+        <video id="video" muted playsinline preload="auto"></video>
+        <div class="vignette"></div>
+        <div class="captions">
+          <div class="caption" data-at="0.02"><h2>Scroll to begin</h2><p>The video moves with you.</p></div>
+          <div class="caption" data-at="0.5"><h2>Keep scrolling</h2><p>Down plays forward. Up rewinds.</p></div>
+          <div class="caption" data-at="0.95"><h2>You control every frame</h2><p>Your video, your pace.</p></div>
+        </div>
       </div>
-    </section>
+    </div>
 
-    <section class="features">
-      <div class="feature">
-        <h4>⚡ Instant</h4>
-        <p>Your website is generated the moment you upload a video — no coding required.</p>
-      </div>
-      <div class="feature">
-        <h4>📱 Responsive</h4>
-        <p>Looks great on phones, tablets, and desktops out of the box.</p>
-      </div>
-      <div class="feature">
-        <h4>🎨 Customizable</h4>
-        <p>Change the title and tagline in the builder bar and watch it update live.</p>
-      </div>
-    </section>
-
-    <footer id="footer">© <span id="year"></span> My Awesome Video. Made with the Video Website Builder.</footer>
+    <div class="hint" id="hint"><span class="chev">⌄</span>scroll</div>
   </div>
 
   <script>
     const videoInput = document.getElementById('videoInput');
     const filename   = document.getElementById('filename');
+    const builder    = document.getElementById('builder');
     const empty      = document.getElementById('empty');
-    const site       = document.getElementById('site');
-    const heroVideo  = document.getElementById('heroVideo');
-    const mainVideo  = document.getElementById('mainVideo');
-    const titleInput = document.getElementById('title');
-    const tagInput   = document.getElementById('tagline');
-    const heroTitle  = document.getElementById('heroTitle');
-    const heroTag    = document.getElementById('heroTagline');
-    const footer     = document.getElementById('footer');
+    const stage      = document.getElementById('stage');
+    const track      = document.getElementById('track');
+    const video      = document.getElementById('video');
+    const progress   = document.getElementById('progress');
+    const hint       = document.getElementById('hint');
+    const loading    = document.getElementById('loading');
+    const captions   = Array.from(document.querySelectorAll('.caption'));
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // How many viewport-heights of scrolling map to the whole video.
+    // Higher = slower, more deliberate scrubbing.
+    const SCROLL_PER_VIDEO = 5; // in screens
 
-    // When a video is chosen, build the site around it.
+    let duration = 0;
+    let target = 0;   // where scroll says the playhead should be (seconds)
+    let current = 0;  // smoothed playhead we actually seek to
+    let raf = null;
+
     videoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const url = URL.createObjectURL(file);
-      heroVideo.src = url;
-      mainVideo.src = url;
-
       filename.textContent = file.name;
-      empty.style.display = 'none';
-      site.classList.add('active');
+      video.src = URL.createObjectURL(file);
+      loading.classList.add('show');
 
-      document.title = titleInput.value || 'My Video Website';
+      video.addEventListener('loadedmetadata', onReady, { once: true });
     });
 
-    // Live-update the website text as the user types.
-    titleInput.addEventListener('input', () => {
-      heroTitle.textContent = titleInput.value;
-      footer.childNodes[0].textContent = '© ';
-      document.title = titleInput.value || 'My Video Website';
-    });
-    tagInput.addEventListener('input', () => {
-      heroTag.textContent = tagInput.value;
-    });
+    function onReady() {
+      duration = video.duration || 0;
+
+      // Size the scroll track so total scroll distance = SCROLL_PER_VIDEO screens.
+      track.style.height = (SCROLL_PER_VIDEO * 100) + 'vh';
+
+      empty.classList.add('hidden');
+      builder.classList.add('hidden');
+      stage.classList.add('active');
+      loading.classList.remove('show');
+
+      // Pause any auto playback — we drive currentTime by scroll only.
+      video.pause();
+      window.scrollTo(0, 0);
+      current = target = 0;
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+      tick();
+    }
+
+    function onScroll() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+
+      target = p * duration;
+      progress.style.width = (p * 100) + '%';
+
+      // Fade the scroll hint once the user starts moving.
+      if (p > 0.01) hint.classList.add('gone');
+      else hint.classList.remove('gone');
+
+      // Show whichever caption is closest to the current scroll milestone.
+      captions.forEach((c) => {
+        const at = parseFloat(c.dataset.at);
+        c.classList.toggle('show', Math.abs(p - at) < 0.12);
+      });
+    }
+
+    // Smoothly ease the real playhead toward the scroll target every frame.
+    // This makes reversing (scroll up) look like the video playing backward
+    // instead of snapping frame-to-frame.
+    function tick() {
+      current += (target - current) * 0.15;
+      if (Math.abs(target - current) < 0.001) current = target;
+
+      if (duration && video.readyState >= 2) {
+        try { video.currentTime = Math.min(duration - 0.02, Math.max(0, current)); } catch (e) {}
+      }
+      raf = requestAnimationFrame(tick);
+    }
   </script>
 </body>
 </html>
