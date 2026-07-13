@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Website Builder</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0b1020;
+      --panel: #141a2e;
+      --accent: #6d8bff;
+      --accent-2: #b06dff;
+      --text: #eef1fb;
+      --muted: #9aa4c4;
+      --border: #263056;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ---------- Builder bar (top control panel) ---------- */
+    .builder {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+    .builder h1 {
+      font-size: 18px;
+      margin-right: auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+    .field input[type="text"] {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      min-width: 200px;
+    }
+    .upload-btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .1s ease, opacity .2s ease;
+    }
+    .upload-btn:hover { transform: translateY(-1px); }
+    .upload-btn:active { transform: translateY(0); }
+    input[type="file"] { display: none; }
+    .filename { font-size: 12px; color: var(--muted); }
+
+    /* ---------- Generated website preview ---------- */
+    .site { display: none; }
+    .site.active { display: block; }
+
+    .hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .hero .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11,16,32,.35), rgba(11,16,32,.85));
+      z-index: 1;
+    }
+    .hero .content {
+      position: relative;
+      z-index: 2;
+      padding: 40px 24px;
+      max-width: 820px;
+    }
+    .hero h2 {
+      font-size: clamp(32px, 6vw, 64px);
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .cta {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 999px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ---------- Watch section with full player ---------- */
+    .watch {
+      padding: 64px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .watch h3 {
+      font-size: 28px;
+      margin-bottom: 24px;
+    }
+    .player-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    .player-wrap video { width: 100%; display: block; }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .feature {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .feature h4 { margin-bottom: 8px; font-size: 18px; }
+    .feature p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ---------- Empty state ---------- */
+    .empty {
+      text-align: center;
+      padding: 100px 24px;
+      color: var(--muted);
+    }
+    .empty .icon { font-size: 64px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- Control panel: upload a video + set website text -->
+  <div class="builder">
+    <h1>🎬 Video Website Builder</h1>
+
+    <div class="field">
+      <label for="title">Website Title</label>
+      <input type="text" id="title" value="My Awesome Video" />
+    </div>
+
+    <div class="field">
+      <label for="tagline">Tagline</label>
+      <input type="text" id="tagline" value="Built from a single video upload." />
+    </div>
+
+    <label class="upload-btn">
+      Upload Video
+      <input type="file" id="videoInput" accept="video/*" />
+    </label>
+    <span class="filename" id="filename">No video selected</span>
+  </div>
+
+  <!-- Empty state before a video is uploaded -->
+  <div class="empty" id="empty">
+    <div class="icon">📹</div>
+    <p>Upload a video above to instantly generate your website.</p>
+  </div>
+
+  <!-- Generated website (hidden until a video is uploaded) -->
+  <div class="site" id="site">
+    <section class="hero">
+      <video id="heroVideo" autoplay muted loop playsinline></video>
+      <div class="overlay"></div>
+      <div class="content">
+        <h2 id="heroTitle">My Awesome Video</h2>
+        <p id="heroTagline">Built from a single video upload.</p>
+        <a href="#watch" class="cta">Watch Now</a>
+      </div>
+    </section>
+
+    <section class="watch" id="watch">
+      <h3>Watch the full video</h3>
+      <div class="player-wrap">
+        <video id="mainVideo" controls></video>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <h4>⚡ Instant</h4>
+        <p>Your website is generated the moment you upload a video — no coding required.</p>
+      </div>
+      <div class="feature">
+        <h4>📱 Responsive</h4>
+        <p>Looks great on phones, tablets, and desktops out of the box.</p>
+      </div>
+      <div class="feature">
+        <h4>🎨 Customizable</h4>
+        <p>Change the title and tagline in the builder bar and watch it update live.</p>
+      </div>
+    </section>
+
+    <footer id="footer">© <span id="year"></span> My Awesome Video. Made with the Video Website Builder.</footer>
+  </div>
+
+  <script>
+    const videoInput = document.getElementById('videoInput');
+    const filename   = document.getElementById('filename');
+    const empty      = document.getElementById('empty');
+    const site       = document.getElementById('site');
+    const heroVideo  = document.getElementById('heroVideo');
+    const mainVideo  = document.getElementById('mainVideo');
+    const titleInput = document.getElementById('title');
+    const tagInput   = document.getElementById('tagline');
+    const heroTitle  = document.getElementById('heroTitle');
+    const heroTag    = document.getElementById('heroTagline');
+    const footer     = document.getElementById('footer');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // When a video is chosen, build the site around it.
+    videoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      heroVideo.src = url;
+      mainVideo.src = url;
+
+      filename.textContent = file.name;
+      empty.style.display = 'none';
+      site.classList.add('active');
+
+      document.title = titleInput.value || 'My Video Website';
+    });
+
+    // Live-update the website text as the user types.
+    titleInput.addEventListener('input', () => {
+      heroTitle.textContent = titleInput.value;
+      footer.childNodes[0].textContent = '© ';
+      document.title = titleInput.value || 'My Video Website';
+    });
+    tagInput.addEventListener('input', () => {
+      heroTag.textContent = tagInput.value;
+    });
+  </script>
+</body>
+</html>
