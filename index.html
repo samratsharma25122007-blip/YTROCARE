@@ -151,7 +151,7 @@
   <div class="builder" id="builder">
     <h1>🎬 Scroll Video Landing Page</h1>
     <label class="upload-btn">
-      Upload Video
+      Change Video
       <input type="file" id="videoInput" accept="video/*" />
     </label>
     <span class="filename" id="filename">No video selected</span>
@@ -160,7 +160,7 @@
   <!-- Empty state -->
   <div class="empty" id="empty">
     <div class="icon">📹</div>
-    <p>Upload a video, then scroll.<br />Scrolling down plays it forward — scrolling up reverses it.</p>
+    <p>Loading video…<br />Scrolling down plays it forward — scrolling up reverses it.</p>
   </div>
 
   <!-- Scroll-scrub stage -->
@@ -205,16 +205,25 @@
     let current = 0;  // smoothed playhead we actually seek to
     let raf = null;
 
+    // The video that ships with this page — loaded automatically on open.
+    const DEFAULT_VIDEO = 'kling_20260714_VIDEO_make_smoot_918_0.mp4';
+
+    function loadVideo(src, name) {
+      filename.textContent = name;
+      video.src = src;
+      loading.classList.add('show');
+      video.addEventListener('loadedmetadata', onReady, { once: true });
+    }
+
+    // Let the user swap in a different video if they want.
     videoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
-      filename.textContent = file.name;
-      video.src = URL.createObjectURL(file);
-      loading.classList.add('show');
-
-      video.addEventListener('loadedmetadata', onReady, { once: true });
+      loadVideo(URL.createObjectURL(file), file.name);
     });
+
+    // Auto-load the bundled video on page open.
+    loadVideo(DEFAULT_VIDEO, DEFAULT_VIDEO);
 
     function onReady() {
       duration = video.duration || 0;
