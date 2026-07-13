@@ -3,302 +3,325 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scroll Video Landing Page</title>
+  <title>Scroll Frame Animation — Three.js</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0b1020;
-      --panel: #141a2e;
-      --accent: #6d8bff;
-      --accent-2: #b06dff;
-      --text: #eef1fb;
-      --muted: #9aa4c4;
-      --border: #263056;
+      --accent: #7c8bff;
+      --accent-2: #c06bff;
+      --text: #f2f4ff;
+      --muted: #9aa4c8;
     }
 
     html { scroll-behavior: auto; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
       color: var(--text);
+      /* Dark gradient background (shows through let/pillar-box + on load) */
+      background:
+        radial-gradient(1200px 800px at 15% 10%, #161033 0%, transparent 55%),
+        radial-gradient(1000px 900px at 90% 90%, #06263a 0%, transparent 55%),
+        linear-gradient(160deg, #05060e 0%, #0a0d1e 45%, #070512 100%);
+      background-attachment: fixed;
     }
 
-    /* ---------- Upload panel (shown until a video is chosen) ---------- */
-    .builder {
+    /* ---------- Three.js canvas (pinned full-screen) ---------- */
+    #gl {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 50;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      align-items: center;
-      transition: transform .4s ease, opacity .4s ease;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      display: block;
     }
-    .builder.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-    .builder h1 {
-      font-size: 16px;
-      margin-right: auto;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    /* Dark vignette + gradient wash over the video for text contrast */
+    .scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(4,5,12,.78) 0%, rgba(4,5,12,.45) 32%, rgba(4,5,12,0) 60%),
+        linear-gradient(180deg, rgba(4,5,12,.55) 0%, rgba(4,5,12,0) 30%, rgba(4,5,12,.55) 100%);
+    }
+
+    /* ---------- Hero headline (center-left) with parallax ---------- */
+    .hero {
+      position: fixed;
+      top: 50%;
+      left: clamp(24px, 8vw, 140px);
+      transform: translateY(-50%);
+      z-index: 3;
+      max-width: min(560px, 80vw);
+      will-change: transform, opacity;
+    }
+    .hero .eyebrow {
+      font-size: 13px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(38px, 6.4vw, 82px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      background: linear-gradient(120deg, #ffffff 0%, #cdd3ff 45%, #b58cff 100%);
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      margin-top: 20px;
+      font-size: clamp(15px, 1.8vw, 20px);
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 30ch;
+    }
+
+    /* ---------- Chrome: upload, progress, hint, loading ---------- */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 6;
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px;
+      transition: opacity .4s ease, transform .4s ease;
+    }
+    .topbar .brand {
+      font-size: 13px; color: var(--muted); margin-right: auto;
+      letter-spacing: .04em;
     }
     .upload-btn {
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
       color: #fff; border: none;
-      padding: 11px 20px; border-radius: 10px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      transition: transform .1s ease;
+      padding: 9px 16px; border-radius: 9px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
     }
-    .upload-btn:hover { transform: translateY(-1px); }
+    .upload-btn:hover { filter: brightness(1.08); }
     input[type="file"] { display: none; }
-    .filename { font-size: 12px; color: var(--muted); }
-
-    /* ---------- Empty state ---------- */
-    .empty {
-      position: fixed; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; color: var(--muted); padding: 24px;
-    }
-    .empty .icon { font-size: 64px; margin-bottom: 16px; }
-    .empty.hidden { display: none; }
-
-    /* ---------- Scroll-scrub stage ---------- */
-    /* The tall .scroll-track creates scroll distance; the .sticky layer
-       stays pinned in the viewport while the video is scrubbed by scroll. */
-    #stage { display: none; }
-    #stage.active { display: block; }
-
-    .scroll-track { position: relative; }
-
-    .sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-      background: #000;
-    }
-    .sticky video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .vignette {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(11,16,32,.35), transparent 25%, transparent 70%, rgba(11,16,32,.75));
-      pointer-events: none;
-    }
-
-    /* Text captions pinned over the video, fading in at scroll milestones */
-    .captions { position: absolute; inset: 0; pointer-events: none; }
-    .caption {
-      position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      width: min(820px, 90vw);
-      opacity: 0;
-      transition: opacity .3s ease;
-    }
-    .caption.show { opacity: 1; }
-    .caption h2 { font-size: clamp(32px, 6vw, 64px); line-height: 1.05; margin-bottom: 12px; }
-    .caption p  { font-size: clamp(16px, 2.4vw, 22px); color: var(--muted); }
-
-    /* Scroll hint + progress bar */
-    .hint {
-      position: fixed;
-      left: 50%; bottom: 26px;
-      transform: translateX(-50%);
-      z-index: 20;
-      color: var(--text);
-      font-size: 13px; letter-spacing: .04em;
-      opacity: .85;
-      transition: opacity .3s ease;
-      pointer-events: none;
-      text-align: center;
-    }
-    .hint .chev { display: block; font-size: 20px; animation: bob 1.4s ease-in-out infinite; }
-    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
-    .hint.gone { opacity: 0; }
 
     .progress {
-      position: fixed;
-      left: 0; top: 0;
+      position: fixed; left: 0; top: 0;
       height: 3px; width: 0%;
-      z-index: 40;
+      z-index: 7;
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      transition: width .05s linear;
     }
+
+    .hint {
+      position: fixed;
+      left: 50%; bottom: 24px;
+      transform: translateX(-50%);
+      z-index: 5;
+      color: var(--text); opacity: .8;
+      font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+      text-align: center; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .hint .chev { display: block; font-size: 18px; animation: bob 1.5s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+    .hint.gone { opacity: 0; }
 
     .loading {
       position: fixed; inset: 0;
-      display: none;
-      align-items: center; justify-content: center;
-      z-index: 30; color: var(--muted); background: #000;
+      z-index: 8;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 14px; letter-spacing: .08em;
     }
-    .loading.show { display: flex; }
+    .loading.hide { display: none; }
+    .spinner {
+      width: 16px; height: 16px; margin-right: 10px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* The tall track that supplies scroll distance. */
+    #track { position: relative; z-index: 2; }
   </style>
 </head>
 <body>
 
-  <!-- Upload panel -->
-  <div class="builder" id="builder">
-    <h1>🎬 Scroll Video Landing Page</h1>
+  <canvas id="gl"></canvas>
+  <div class="scrim"></div>
+
+  <div class="hero" id="hero">
+    <div class="eyebrow">Scroll to play</div>
+    <h1>Every frame<br />follows you.</h1>
+    <p>A scroll-driven film. Scroll down to move forward — scroll up to rewind.</p>
+  </div>
+
+  <div class="topbar" id="topbar">
+    <span class="brand">◾ Three.js scroll film</span>
     <label class="upload-btn">
       Change Video
       <input type="file" id="videoInput" accept="video/*" />
     </label>
-    <span class="filename" id="filename">No video selected</span>
   </div>
 
-  <!-- Empty state -->
-  <div class="empty" id="empty">
-    <div class="icon">📹</div>
-    <p>Loading video…<br />Scrolling down plays it forward — scrolling up reverses it.</p>
-  </div>
+  <div class="progress" id="progress"></div>
+  <div class="hint" id="hint"><span class="chev">⌄</span>scroll</div>
+  <div class="loading" id="loading"><span class="spinner"></span>Loading film…</div>
 
-  <!-- Scroll-scrub stage -->
-  <div id="stage">
-    <div class="progress" id="progress"></div>
-    <div class="loading" id="loading">Preparing video…</div>
+  <div id="track"></div>
 
-    <div class="scroll-track" id="track">
-      <div class="sticky">
-        <video id="video" muted playsinline preload="auto"></video>
-        <div class="vignette"></div>
-        <div class="captions">
-          <div class="caption" data-at="0.02"><h2>Scroll to begin</h2><p>The video moves with you.</p></div>
-          <div class="caption" data-at="0.5"><h2>Keep scrolling</h2><p>Down plays forward. Up rewinds.</p></div>
-          <div class="caption" data-at="0.95"><h2>You control every frame</h2><p>Your video, your pace.</p></div>
-        </div>
-      </div>
-    </div>
+  <!-- Hidden media element; its frames are drawn into WebGL by Three.js -->
+  <video id="video" muted playsinline preload="auto" crossorigin="anonymous" style="display:none"></video>
 
-    <div class="hint" id="hint"><span class="chev">⌄</span>scroll</div>
-  </div>
+  <script type="module">
+    import * as THREE from './three.module.min.js';
 
-  <script>
+    const canvas   = document.getElementById('gl');
+    const video    = document.getElementById('video');
+    const hero      = document.getElementById('hero');
+    const topbar    = document.getElementById('topbar');
+    const progress  = document.getElementById('progress');
+    const hint      = document.getElementById('hint');
+    const loading   = document.getElementById('loading');
+    const track     = document.getElementById('track');
     const videoInput = document.getElementById('videoInput');
-    const filename   = document.getElementById('filename');
-    const builder    = document.getElementById('builder');
-    const empty      = document.getElementById('empty');
-    const stage      = document.getElementById('stage');
-    const track      = document.getElementById('track');
-    const video      = document.getElementById('video');
-    const progress   = document.getElementById('progress');
-    const hint       = document.getElementById('hint');
-    const loading    = document.getElementById('loading');
-    const captions   = Array.from(document.querySelectorAll('.caption'));
 
-    // How many viewport-heights of scrolling map to the whole video.
-    // Higher = slower, more deliberate scrubbing.
-    const SCROLL_PER_VIDEO = 5; // in screens
-
-    let duration = 0;
-    let target = 0;   // where scroll says the playhead should be (seconds)
-    let current = 0;  // smoothed playhead we actually seek to
-    let raf = null;
-    let lastT = 0;    // timestamp of previous animation frame (ms)
-
-    // Higher = the playhead catches up to your scroll faster (less lag, but
-    // less "backward playback" feel). Frame-rate independent — see tick().
+    // How many screen-heights of scrolling cover the whole video.
+    // Base was 5; slowed 40% -> 5 / 0.6 ≈ 8.33 (you scroll more per frame).
+    const SCROLL_PER_VIDEO = 8.33;
+    // Frame-rate-independent smoothing rate (higher = tracks scroll tighter).
     const SMOOTH = 12;
 
-    // The video that ships with this page. The 120fps all-intra build is
-    // used when present; if it is missing we fall back to the original.
-    const DEFAULT_VIDEO   = 'kling_120fps.mp4';
-    const FALLBACK_VIDEO  = 'kling_20260714_VIDEO_make_smoot_918_0.mp4';
+    const DEFAULT_VIDEO  = 'kling_120fps.mp4';
+    const FALLBACK_VIDEO = 'kling_20260714_VIDEO_make_smoot_918_0.mp4';
 
-    function loadVideo(src, name, isDefault) {
-      filename.textContent = name;
-      video.src = src;
-      loading.classList.add('show');
-      video.addEventListener('loadedmetadata', onReady, { once: true });
-      // If the 120fps file isn't there, quietly load the original instead.
-      if (isDefault) {
-        video.addEventListener('error', () => {
-          loadVideo(FALLBACK_VIDEO, FALLBACK_VIDEO, false);
-        }, { once: true });
-      }
-    }
+    let duration = 0, target = 0, current = 0, lastT = 0;
+    let ready = false;
 
-    // Let the user swap in a different video if they want.
-    videoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      loadVideo(URL.createObjectURL(file), file.name);
+    /* ---------------- Three.js scene: video on a cover-fit plane ------------- */
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const videoTex = new THREE.VideoTexture(video);
+    videoTex.colorSpace = THREE.SRGBColorSpace;
+    videoTex.minFilter  = THREE.LinearFilter;
+    videoTex.magFilter  = THREE.LinearFilter;
+
+    // Fragment shader does object-fit: cover so the film fills any screen.
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTex:         { value: videoTex },
+        uMediaAspect: { value: 16 / 9 },
+        uViewAspect:  { value: 1 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUv;
+        uniform sampler2D uTex;
+        uniform float uMediaAspect;
+        uniform float uViewAspect;
+        void main() {
+          vec2 uv = vUv;
+          if (uViewAspect > uMediaAspect) {
+            // view wider than film -> crop top/bottom
+            uv.y = (uv.y - 0.5) * (uMediaAspect / uViewAspect) + 0.5;
+          } else {
+            // view taller/narrower -> crop sides
+            uv.x = (uv.x - 0.5) * (uViewAspect / uMediaAspect) + 0.5;
+          }
+          gl_FragColor = texture2D(uTex, uv);
+        }
+      `,
     });
 
-    // Auto-load the bundled video on page open.
-    loadVideo(DEFAULT_VIDEO, DEFAULT_VIDEO, true);
+    const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+    scene.add(quad);
+
+    function resize() {
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      material.uniforms.uViewAspect.value = w / h;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* ---------------- Video loading (auto + user swap) ---------------------- */
+    function loadVideo(src, isDefault) {
+      ready = false;
+      loading.classList.remove('hide');
+      video.src = src;
+      video.addEventListener('loadedmetadata', onReady, { once: true });
+      if (isDefault) {
+        video.addEventListener('error', () => loadVideo(FALLBACK_VIDEO, false), { once: true });
+      }
+    }
+    videoInput.addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      if (f) loadVideo(URL.createObjectURL(f), false);
+    });
 
     function onReady() {
       duration = video.duration || 0;
+      material.uniforms.uMediaAspect.value =
+        (video.videoWidth && video.videoHeight) ? video.videoWidth / video.videoHeight : 16 / 9;
 
-      // Size the scroll track so total scroll distance = SCROLL_PER_VIDEO screens.
       track.style.height = (SCROLL_PER_VIDEO * 100) + 'vh';
-
-      empty.classList.add('hidden');
-      builder.classList.add('hidden');
-      stage.classList.add('active');
-      loading.classList.remove('show');
-
-      // Pause any auto playback — we drive currentTime by scroll only.
       video.pause();
       window.scrollTo(0, 0);
-      current = target = 0;
+      current = target = 0; lastT = 0; ready = true;
 
-      window.addEventListener('scroll', onScroll, { passive: true });
+      // Nudge the first frame in, then reveal.
+      try { video.currentTime = 0.0001; } catch (e) {}
+      loading.classList.add('hide');
       onScroll();
-      lastT = 0;
-      raf = requestAnimationFrame(tick);
     }
 
+    /* ---------------- Scroll -> playhead + headline parallax ---------------- */
     function onScroll() {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
 
       target = p * duration;
       progress.style.width = (p * 100) + '%';
+      hint.classList.toggle('gone', p > 0.01);
 
-      // Fade the scroll hint once the user starts moving.
-      if (p > 0.01) hint.classList.add('gone');
-      else hint.classList.remove('gone');
+      // Subtle parallax: headline drifts up and fades slightly as you scroll.
+      const drift = -p * 90;            // px, gentle upward parallax
+      const fade  = 1 - Math.min(0.72, p * 0.9);
+      hero.style.transform = `translateY(calc(-50% + ${drift}px))`;
+      hero.style.opacity = fade.toFixed(3);
 
-      // Show whichever caption is closest to the current scroll milestone.
-      captions.forEach((c) => {
-        const at = parseFloat(c.dataset.at);
-        c.classList.toggle('show', Math.abs(p - at) < 0.12);
-      });
+      // Fade the top bar away once scrolling begins.
+      topbar.style.opacity = p > 0.02 ? '0' : '1';
     }
+    window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Smoothly ease the real playhead toward the scroll target every frame.
-    // requestAnimationFrame runs at the display's refresh rate, so on a
-    // 120Hz screen this loop renders 120 seeks per second. The easing is
-    // time-based (uses the real gap between frames), so the motion feels
-    // identical on 60Hz and 120Hz instead of running twice as fast on 120Hz.
-    // This is what makes reversing (scroll up) look like smooth backward
-    // playback rather than snapping frame-to-frame.
+    /* ---------------- Render loop (runs at display refresh rate) ------------ */
     function tick(now) {
       const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 1 / 60;
       lastT = now;
 
-      // Frame-rate-independent exponential smoothing toward the scroll target.
-      const k = 1 - Math.exp(-SMOOTH * dt);
-      current += (target - current) * k;
-      if (Math.abs(target - current) < 0.0005) current = target;
-
-      if (duration && video.readyState >= 2) {
-        try { video.currentTime = Math.min(duration - 0.001, Math.max(0, current)); } catch (e) {}
+      if (ready && duration) {
+        const k = 1 - Math.exp(-SMOOTH * dt);   // frame-rate-independent easing
+        current += (target - current) * k;
+        if (Math.abs(target - current) < 0.0005) current = target;
+        if (video.readyState >= 2) {
+          try { video.currentTime = Math.min(duration - 0.001, Math.max(0, current)); } catch (e) {}
+        }
+        videoTex.needsUpdate = true;
       }
-      raf = requestAnimationFrame(tick);
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
     }
+    requestAnimationFrame(tick);
+
+    // Kick things off.
+    loadVideo(DEFAULT_VIDEO, true);
   </script>
 </body>
 </html>
