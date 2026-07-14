@@ -284,8 +284,8 @@ const defaultBallpitConfig = {
   ambientIntensity: 1.5,
 };
 
-// RO Care India — water-inspired palette for the spheres.
-const brandColors = ["#005CFF", "#5FD3FF", "#EAF2FF", "#B7DBFF", "#2E7CFF"];
+// Original ballpit palette.
+const brandColors = ["#E5E5E5", "#CCCCCC", "#B2B2B2"];
 
 type BallpitProps = Partial<typeof defaultBallpitConfig & { colors: (string | Color)[] }>;
 
