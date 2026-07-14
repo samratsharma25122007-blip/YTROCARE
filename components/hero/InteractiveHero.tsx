@@ -373,7 +373,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
   return (
     <section
       id="home"
-      className={`relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-white ${className}`}
+      className={`relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#b7b7b7] ${className}`}
     >
       {/* Interactive ballpit background */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 h-full w-full" />
@@ -384,7 +384,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "radial-gradient(70% 55% at 50% 48%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.45) 55%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(70% 55% at 50% 48%, rgba(183,183,183,0.82) 0%, rgba(183,183,183,0.45) 55%, rgba(183,183,183,0) 100%)",
         }}
       />
 
