@@ -107,7 +107,7 @@ export default function ScrollVideoStory() {
           const diff = targetTime.current - cur;
           // Only seek when the gap is meaningful — avoids redundant seeks/jank.
           if (Math.abs(diff) > 0.01 && !video.seeking) {
-            video.currentTime = cur + diff * 0.2;
+            video.currentTime = cur + diff * 0.35;
           }
         }
         renderer.render(scene, camera);
@@ -156,8 +156,8 @@ export default function ScrollVideoStory() {
     <section
       ref={sectionRef}
       id="story"
-      // 1200vh keeps the slowed-down scrub pacing.
-      className="relative h-[1200vh] w-full"
+      // Shorter pinned length = the video completes in fewer scrolls.
+      className="relative h-[500vh] w-full"
       aria-label="Scroll-driven RO service video"
     >
       {/* Pinned stage — no background of its own; the video covers it */}
