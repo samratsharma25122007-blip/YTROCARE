@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://samratsharma25122007-blip.github.io/YTROCARE/sitemap.xml

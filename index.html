@@ -5,12 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RO Care India — RO Service, Repair, Installation & AMC</title>
   <meta name="description" content="RO Care India — expert RO water purifier service, repair, installation and AMC for home, commercial and industrial plants. Book your service in 60 seconds." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="theme-color" content="#071a33" />
+  <link rel="canonical" href="https://samratsharma25122007-blip.github.io/YTROCARE/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="RO Care India" />
+  <meta property="og:title" content="RO Care India — RO Service, Repair, Installation &amp; AMC" />
+  <meta property="og:description" content="Expert RO water purifier service, repair, installation and AMC. Book your service in 60 seconds." />
+  <meta property="og:url" content="https://samratsharma25122007-blip.github.io/YTROCARE/" />
+  <meta property="og:image" content="https://samratsharma25122007-blip.github.io/YTROCARE/hero-poster.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="styles.css" />
   <style>
     /* ---- Film hero (Three.js scroll-scrubbed video) ---- */
     .film { position: relative; height: 300vh; }           /* scroll distance for the film */
-    .film-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--black); }
-    #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    /* Poster frame shows instantly while the video downloads; the WebGL
+       canvas fades in over it once the first frame is ready. */
+    .film-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden;
+      background: var(--black) url('hero-poster.jpg') center/cover no-repeat; }
+    #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+      opacity: 0; transition: opacity .6s ease; }
     .scrim { position: absolute; inset: 0; pointer-events: none;
       background:
         linear-gradient(90deg, rgba(3,8,15,.82) 0%, rgba(3,8,15,.5) 34%, rgba(3,8,15,0) 62%),
@@ -266,6 +280,38 @@
     </div>
   </section>
 
+  <!-- ===================== FAQ ===================== -->
+  <section class="section" style="background:var(--paper)">
+    <div class="container">
+      <div class="center reveal" style="max-width:680px;margin-inline:auto">
+        <span class="eyebrow">Good to know</span>
+        <h2 class="section-title">Frequently asked questions</h2>
+      </div>
+      <div class="faq reveal">
+        <details>
+          <summary>How often should an RO purifier be serviced?</summary>
+          <p>Every 5–6 months. Filters clog and membranes wear with use — past that window, TDS creeps up and bacteria can build in the tank, even if the water still looks clear.</p>
+        </details>
+        <details>
+          <summary>How much does a service cost?</summary>
+          <p>It depends on what your purifier needs. We diagnose first and give you an upfront quote for parts and labour — no work starts without your approval, and there are no hidden charges.</p>
+        </details>
+        <details>
+          <summary>Which brands do you service?</summary>
+          <p>All major brands — Kent, Aquaguard, Livpure, Pureit, Havells, Blue Star and more — plus assembled and commercial units. Our technicians carry brand-compatible genuine spares.</p>
+        </details>
+        <details>
+          <summary>How quickly can a technician visit?</summary>
+          <p>Usually the same day. Our average response time is around 60 minutes in core service areas; we confirm your slot on the phone right after you book.</p>
+        </details>
+        <details>
+          <summary>Do you handle commercial and industrial RO plants?</summary>
+          <p>Yes — installation, preventive maintenance, repair and AMC for plants from 250 LPH to 1000+ LPH used by schools, hospitals, hotels and factories.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== CTA BAND (animated shader bg) ===================== -->
   <section class="section cta-band" data-shader-bg data-color1="#061530" data-color2="#1b74d1">
     <div class="container center">
@@ -385,6 +431,7 @@
       video.pause(); ready = true; lastT = 0;
       try { video.currentTime = 0.0001; } catch(e){}
       loading.classList.add('hide');
+      canvas.style.opacity = '1';   // fade the film in over the poster
       onScroll();
     }
 
@@ -415,6 +462,8 @@
     requestAnimationFrame(tick);
     loadSrc();
   </script>
+  <a class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">✆</a>
+
   <script src="app.js"></script>
   <script type="module" src="shader-bg.js"></script>
 </body>
