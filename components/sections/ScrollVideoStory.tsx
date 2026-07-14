@@ -156,8 +156,8 @@ export default function ScrollVideoStory() {
     <section
       ref={sectionRef}
       id="story"
-      // Shorter pinned length = the video completes in fewer scrolls.
-      className="relative h-[500vh] w-full"
+      // Two viewport-heights of scrubbing — the clip finishes in ~2 scrolls.
+      className="relative h-[300vh] w-full"
       aria-label="Scroll-driven RO service video"
     >
       {/* Pinned stage — no background of its own; the video covers it */}
