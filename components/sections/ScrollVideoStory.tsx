@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Scene,
   OrthographicCamera,
@@ -14,29 +13,25 @@ import {
   SRGBColorSpace,
 } from "three";
 import { ScrollTrigger } from "@/lib/gsap";
-import { STORY_CAPTIONS, STORY_VIDEO_SRC } from "@/lib/data";
-import Particles from "@/components/ui/Particles";
+import { STORY_VIDEO_SRC } from "@/lib/data";
 
 /**
  * The centrepiece. A pinned, full-viewport section where the story video is
  * rendered through Three.js as a WebGL texture and scrubbed frame-by-frame by
- * scroll — forward on scroll-down, backward on scroll-up. The headline sits
- * center-left with a subtle scroll parallax, over a clean dark gradient.
- * If the video asset isn't present, a CSS "ageing purifier" carries the story.
+ * scroll — forward on scroll-down, backward on scroll-up. The video fills the
+ * screen ("cover" fit) and brings its own background; no overlays, no text.
+ * If the video asset isn't present, a CSS purifier carries the section.
  */
 export default function ScrollVideoStory() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const headlineRef = useRef<HTMLDivElement>(null);
-  const dustRef = useRef<HTMLDivElement>(null);
   const grimeRef = useRef<HTMLDivElement>(null);
 
-  const [captionIndex, setCaptionIndex] = useState(0);
   const [videoOk, setVideoOk] = useState(true);
 
-  // Live scroll progress shared between the rAF scrubber and ScrollTrigger.
+  // Live scroll target shared between the rAF scrubber and ScrollTrigger.
   const targetTime = useRef(0);
   const duration = useRef(0);
 
@@ -57,8 +52,7 @@ export default function ScrollVideoStory() {
 
     const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
 
-    // --- Three.js: the video as a WebGL texture on a screen-fit plane ---
-    // Only when the video decodes; the CSS fallback needs no WebGL.
+    // --- Three.js: the video as a WebGL texture on a screen-cover plane ---
     let raf = 0;
     let disposeThree: (() => void) | undefined;
 
@@ -90,16 +84,13 @@ export default function ScrollVideoStory() {
         camera.bottom = -h / 2;
         camera.updateProjectionMatrix();
 
-        // "Contain" fit, capped like the previous design (78vh / 92vw).
+        // "Cover" fit — the video fills the viewport, cropping as needed,
+        // so its own background is the section background.
         const aspect =
           video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : 16 / 9;
-        const maxW = 0.92 * w;
-        const maxH = 0.78 * h;
-        const pw = Math.min(maxW, maxH * aspect);
+        const pw = Math.max(w, h * aspect);
         const ph = pw / aspect;
         plane.scale.set(pw, ph, 1);
-        // Nudge the video right on wide screens so the center-left headline breathes.
-        plane.position.x = w >= 1024 ? w * 0.1 : 0;
       };
       layout();
 
@@ -133,7 +124,7 @@ export default function ScrollVideoStory() {
       };
     }
 
-    // Scroll drives captions, parallax, dust and grime in both modes.
+    // Scroll drives the video's target time (and grime in fallback mode).
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
@@ -142,18 +133,7 @@ export default function ScrollVideoStory() {
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
-
-        // Subtle headline parallax — drifts ~80px against the scroll.
-        if (headlineRef.current) {
-          headlineRef.current.style.transform = `translate3d(0, ${(0.5 - p) * 80}px, 0)`;
-        }
-        // Dust appears in the back half.
-        if (dustRef.current) dustRef.current.style.opacity = `${clamp((p - 0.4) / 0.6)}`;
-        // CSS fallback grime.
         if (grimeRef.current) grimeRef.current.style.opacity = `${clamp(p * 1.05)}`;
-
-        const idx = clamp(Math.floor(p * STORY_CAPTIONS.length), 0, STORY_CAPTIONS.length - 1);
-        setCaptionIndex((prev) => (prev === idx ? prev : idx));
       },
     });
 
@@ -174,29 +154,15 @@ export default function ScrollVideoStory() {
     <section
       ref={sectionRef}
       id="story"
-      // 1200vh (was 700vh) — ~40% slower scrub per scrolled pixel.
+      // 1200vh keeps the slowed-down scrub pacing.
       className="relative h-[1200vh] w-full"
-      aria-label="The story of an unserviced RO"
+      aria-label="Scroll-driven RO service video"
     >
-      {/* Pinned stage — clean dark gradient */}
+      {/* Pinned stage — no background of its own; the video covers it */}
       <div
         ref={stageRef}
-        className="sticky top-0 flex h-[100svh] w-full items-center justify-center overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(165deg, #0B1428 0%, #071320 45%, #10223F 100%)",
-        }}
+        className="sticky top-0 h-[100svh] w-full overflow-hidden bg-black"
       >
-        {/* Soft blue lighting */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(90% 70% at 50% 15%, rgba(0,92,255,0.14), transparent 55%), radial-gradient(70% 60% at 85% 100%, rgba(95,211,255,0.10), transparent 60%)",
-          }}
-        />
-
         {/* The scroll-scrubbed video, rendered via Three.js */}
         {videoOk && (
           <>
@@ -218,55 +184,10 @@ export default function ScrollVideoStory() {
 
         {/* CSS fallback purifier that "ages" — used when no video is present */}
         {!videoOk && (
-          <div className="relative z-10 flex h-full w-full items-center justify-center">
+          <div className="relative z-10 flex h-full w-full items-center justify-center bg-brand-ink">
             <AgeingPurifier grimeRef={grimeRef} />
           </div>
         )}
-
-        {/* Floating dust that intensifies late in the story */}
-        <div
-          ref={dustRef}
-          className="pointer-events-none absolute inset-0 z-20"
-          style={{ opacity: 0 }}
-        >
-          <Particles count={70} color="150,160,175" maxSize={1.8} speed={0.12} />
-        </div>
-
-        {/* Headline — center-left, parallaxed against the scroll */}
-        <div
-          ref={headlineRef}
-          className="pointer-events-none absolute left-6 top-1/2 z-30 -translate-y-1/2 md:left-14 lg:left-20"
-          style={{ willChange: "transform" }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.h2
-              key={captionIndex}
-              initial={{ opacity: 0, y: 26, filter: "blur(14px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -20, filter: "blur(14px)" }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-md text-balance text-left text-3xl font-semibold tracking-tightest text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:text-4xl md:max-w-lg md:text-5xl"
-            >
-              {STORY_CAPTIONS[captionIndex]}
-            </motion.h2>
-          </AnimatePresence>
-        </div>
-
-        {/* Progress rail (Apple-style, minimal) — right side, away from the headline */}
-        <div className="absolute right-6 top-1/2 z-30 hidden -translate-y-1/2 md:block">
-          <div className="flex flex-col items-center gap-2">
-            {STORY_CAPTIONS.map((_, i) => (
-              <span
-                key={i}
-                className="h-6 w-px rounded-full transition-colors duration-500"
-                style={{
-                  backgroundColor:
-                    i <= captionIndex ? "rgba(95,211,255,0.9)" : "rgba(255,255,255,0.2)",
-                }}
-              />
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
