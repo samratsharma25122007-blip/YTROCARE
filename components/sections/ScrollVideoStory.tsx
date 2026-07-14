@@ -57,6 +57,7 @@ export default function ScrollVideoStory() {
     // --- Three.js: the video as a WebGL texture on a screen-cover plane ---
     let raf = 0;
     let disposeThree: (() => void) | undefined;
+    let videoMaterial: MeshBasicMaterial | undefined;
 
     if (videoOk && canvas && video) {
       const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -70,10 +71,15 @@ export default function ScrollVideoStory() {
       texture.magFilter = LinearFilter;
       texture.colorSpace = SRGBColorSpace;
 
-      const plane = new Mesh(
-        new PlaneGeometry(1, 1),
-        new MeshBasicMaterial({ map: texture, toneMapped: false })
-      );
+      // Starts fully transparent over the black stage: the section blends
+      // seamlessly out of the black hero, then the video fades in on scroll.
+      videoMaterial = new MeshBasicMaterial({
+        map: texture,
+        toneMapped: false,
+        transparent: true,
+        opacity: 0,
+      });
+      const plane = new Mesh(new PlaneGeometry(1, 1), videoMaterial);
       scene.add(plane);
 
       const layout = () => {
@@ -135,6 +141,11 @@ export default function ScrollVideoStory() {
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
+        // Fade the video in from black over the first 10% of the scroll and
+        // back to black over the last 6% — both page seams become invisible.
+        if (videoMaterial) {
+          videoMaterial.opacity = Math.min(1, clamp(p / 0.1), clamp((1 - p) / 0.06));
+        }
         if (grimeRef.current) grimeRef.current.style.opacity = `${clamp(p * 1.05)}`;
       },
     });
