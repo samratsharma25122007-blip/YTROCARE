@@ -158,7 +158,7 @@ function SuccessCard({ onReset }: { onReset: () => void }) {
         transition={{ delay: 0.6, duration: 0.6 }}
         className="mt-4 max-w-md text-white/55"
       >
-        Thank you. A certified AutoCare engineer will be assigned to you shortly —
+        Thank you. A certified RO Care India engineer will be assigned to you shortly —
         we&apos;ll confirm your slot on WhatsApp and email.
       </motion.p>
       <motion.div

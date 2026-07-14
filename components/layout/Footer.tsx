@@ -135,7 +135,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-white/40 md:flex-row">
-          <p>© {new Date().getFullYear()} AutoCare. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} RO Care India. All rights reserved.</p>
           <div className="flex gap-8">
             <Link href="#" className="transition-colors hover:text-white">
               Privacy Policy

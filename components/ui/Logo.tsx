@@ -5,7 +5,7 @@ interface LogoProps {
   className?: string;
 }
 
-/** AutoCare wordmark with a minimal droplet glyph. */
+/** RO Care India wordmark with a minimal droplet glyph. */
 export default function Logo({ dark = false, className = "" }: LogoProps) {
   const fg = dark ? "#FFFFFF" : "#071320";
   return (
@@ -40,7 +40,7 @@ export default function Logo({ dark = false, className = "" }: LogoProps) {
         className="text-[17px] font-semibold tracking-tight"
         style={{ color: fg }}
       >
-        Auto<span style={{ color: "#005CFF" }}>Care</span>
+        RO Care <span style={{ color: "#005CFF" }}>India</span>
       </span>
     </span>
   );

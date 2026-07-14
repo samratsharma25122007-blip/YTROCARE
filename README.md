@@ -1,6 +1,6 @@
-# AutoCare — Premium RO Servicing Website
+# RO Care India — Premium RO Servicing Website
 
-An award-winning-grade, cinematic marketing site for **AutoCare**, an RO water
+An award-winning-grade, cinematic marketing site for **RO Care India**, an RO water
 purifier servicing company. Built to feel like the launch of a luxury technology
 product — Apple × Nothing × Dyson × Tesla — not a typical service business site.
 

@@ -10,8 +10,8 @@ export default function WhyChoose() {
     <section className="relative overflow-hidden bg-brand-ink py-28 md:py-40">
       <div className="relative mx-auto max-w-content px-6 md:px-10">
         <SectionHeading
-          eyebrow="The AutoCare Standard"
-          title="Why Choose AutoCare"
+          eyebrow="The RO Care India Standard"
+          title="Why Choose RO Care India"
           subtitle="Every promise, engineered into the experience."
           dark
         />

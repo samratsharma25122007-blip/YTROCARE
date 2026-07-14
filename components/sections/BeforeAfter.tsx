@@ -32,7 +32,7 @@ export default function BeforeAfter() {
         <SectionHeading
           eyebrow="See The Change"
           title="Before vs After"
-          subtitle="Drag to reveal the transformation a single AutoCare service delivers."
+          subtitle="Drag to reveal the transformation a single RO Care India service delivers."
           dark
         />
 
