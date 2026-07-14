@@ -440,10 +440,17 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           </div>
           <button
             type="submit"
-            className="group flex w-full flex-shrink-0 items-center justify-center gap-2 rounded-full bg-brand-blue px-6 py-3 font-semibold text-white shadow-glow transition-colors hover:bg-brand-blue/90 sm:w-auto"
+            className="gooey-button group flex w-full flex-shrink-0 items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold text-white shadow-glow transition-shadow hover:shadow-[0_0_90px_-15px_rgba(0,92,255,0.8)] sm:w-auto"
           >
-            Book Service
-            <Icons.arrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+            <span className="relative z-10 flex items-center gap-2">
+              Book Service
+              <Icons.arrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+            </span>
+            <span aria-hidden className="bubbles">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} />
+              ))}
+            </span>
           </button>
         </motion.form>
       </div>

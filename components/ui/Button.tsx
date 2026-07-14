@@ -25,7 +25,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-brand-blue text-white shadow-glow hover:shadow-[0_0_90px_-15px_rgba(0,92,255,0.8)] hover:-translate-y-0.5",
+    "gooey-button text-white shadow-glow hover:shadow-[0_0_90px_-15px_rgba(0,92,255,0.8)] hover:-translate-y-0.5",
   ghost:
     "border border-white/15 text-white/90 hover:border-white/40 hover:bg-white/5 hover:-translate-y-0.5",
   light:
@@ -53,14 +53,22 @@ export default function Button({
     <>
       <span className="relative z-10 flex items-center gap-2">{children}</span>
       {variant === "primary" && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{
-            background:
-              "radial-gradient(120% 120% at 50% 0%, rgba(95,211,255,0.35), transparent 60%)",
-          }}
-        />
+        <>
+          {/* Gooey pill + rising bubbles, merged by the #goo SVG filter */}
+          <span aria-hidden className="bubbles">
+            {[...Array(5)].map((_, i) => (
+              <span key={i} />
+            ))}
+          </span>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[1] rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{
+              background:
+                "radial-gradient(120% 120% at 50% 0%, rgba(95,211,255,0.35), transparent 60%)",
+            }}
+          />
+        </>
       )}
     </>
   );

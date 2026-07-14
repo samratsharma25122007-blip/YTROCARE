@@ -46,6 +46,21 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
+        {/* Goo filter for the gooey CTA buttons — referenced as url(#goo) */}
+        <svg aria-hidden focusable="false" style={{ position: "absolute", width: 0, height: 0 }}>
+          <defs>
+            <filter id="goo" x="-50%" y="-200%" width="200%" height="500%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+              <feColorMatrix
+                in="blur"
+                mode="matrix"
+                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                result="goo"
+              />
+              <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+          </defs>
+        </svg>
         <SmoothScroll>
           <ScrollProgress />
           <Navbar />

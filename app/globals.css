@@ -83,6 +83,54 @@ body {
   }
 }
 
+/* Gooey CTA buttons — a blue pill with bubbles that rise out of it and
+   merge back gooily (SVG #goo filter defined in the root layout). */
+.gooey-button {
+  position: relative;
+  background: transparent;
+}
+.gooey-button .bubbles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  filter: url(#goo);
+}
+.gooey-button .bubbles::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #005cff;
+}
+.gooey-button .bubbles span {
+  position: absolute;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #005cff;
+  transform: translateY(100%) scale(0.2);
+  animation: gooey-bubble 4.4s ease-in-out infinite;
+}
+.gooey-button .bubbles span:nth-child(1) { left: 10%; animation-delay: 0.2s; }
+.gooey-button .bubbles span:nth-child(2) { left: 28%; width: 16px; height: 16px; animation-delay: 1.5s; }
+.gooey-button .bubbles span:nth-child(3) { left: 50%; width: 10px; height: 10px; animation-delay: 2.7s; }
+.gooey-button .bubbles span:nth-child(4) { left: 68%; width: 15px; height: 15px; animation-delay: 0.9s; }
+.gooey-button .bubbles span:nth-child(5) { left: 85%; animation-delay: 2.1s; }
+@keyframes gooey-bubble {
+  /* Start merged into the pill's top edge, bulge out, drift up and vanish */
+  0% {
+    transform: translateY(100%) scale(0.2);
+  }
+  35% {
+    transform: translateY(-10%) scale(1);
+  }
+  100% {
+    transform: translateY(-260%) scale(0);
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
