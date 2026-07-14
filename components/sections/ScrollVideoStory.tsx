@@ -129,10 +129,11 @@ export default function ScrollVideoStory() {
         const dt = Math.min((now - last) / 1000, 0.05);
         last = now;
         if (duration.current > 0 && !video.seeking) {
-          // Frame-rate-independent smoothing: ~92% closed per 1/60s.
-          const k = 1 - Math.pow(0.0008, dt);
+          // Frame-rate-independent smoothing — tuned to glide yet stay tight
+          // (settles in well under a second so it never feels laggy).
+          const k = 1 - Math.pow(0.0006, dt);
           smoothed += (targetTime.current - smoothed) * k;
-          if (Math.abs(smoothed - video.currentTime) > 0.005) {
+          if (Math.abs(smoothed - video.currentTime) > 0.004) {
             video.currentTime = smoothed;
           }
         }
@@ -157,13 +158,13 @@ export default function ScrollVideoStory() {
       };
     }
 
-    // Scroll position drives the video's target time. `scrub: 1` eases the
-    // progress with a ~1s catch-up for an expensive, silky feel.
+    // Scroll position drives the video's target time. A moderate scrub
+    // catch-up (0.7s) eases the progress fluidly without feeling laggy.
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
-      scrub: 1,
+      scrub: 0.7,
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
@@ -187,8 +188,9 @@ export default function ScrollVideoStory() {
     <section
       ref={sectionRef}
       id="story"
-      // Two viewport-heights of scrubbing — the clip finishes in ~2 scrolls.
-      className="relative h-[300vh] w-full"
+      // 2x faster than before: ~1 viewport-height of scrubbing (200vh total
+      // minus the 100vh sticky pin) plays the whole clip.
+      className="relative h-[200vh] w-full"
       aria-label="Scroll-driven RO service video"
     >
       {/* Pinned stage — no background of its own; the video covers it */}
