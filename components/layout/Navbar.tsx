@@ -30,7 +30,9 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const onDark = scrolled || menuOpen;
+  // The hero background is black, so the navbar sits on a dark surface in
+  // every state — keep the light text treatment throughout.
+  const onDark = true;
 
   const handleNav = (href: string) => (e: React.MouseEvent) => {
     if (href.startsWith("#")) {
