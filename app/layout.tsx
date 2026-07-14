@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Navbar from "@/components/layout/Navbar";
@@ -9,6 +9,15 @@ import ScrollProgress from "@/components/ui/ScrollProgress";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+// Elegant display serif for premium editorial headings.
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -44,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable}`}>
       <body className="font-sans antialiased">
         {/* Goo filter for the gooey CTA buttons — referenced as url(#goo) */}
         <svg aria-hidden focusable="false" style={{ position: "absolute", width: 0, height: 0 }}>

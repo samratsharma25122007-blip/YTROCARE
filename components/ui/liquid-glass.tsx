@@ -126,13 +126,19 @@ export const GlassFilter: React.FC = () => (
  */
 export const LiquidGlassBackground: React.FC = () => (
   <>
+    {/* Pure-black base — matches the hero and video for one seamless black
+        canvas end to end. */}
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-[-3] bg-black" />
+    {/* The flowing water, crushed to a near-black monochrome shimmer so it
+        adds life without reading as blue. */}
     <div aria-hidden className="liquid-glass-bg pointer-events-none absolute inset-0 z-[-2]" />
+    {/* Black veil locks the overall tone to #000000. */}
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 z-[-1]"
       style={{
         background:
-          "linear-gradient(180deg, rgba(4,8,14,0.94) 0%, rgba(7,19,32,0.82) 45%, rgba(6,14,26,0.9) 100%)",
+          "linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.88) 50%, rgba(0,0,0,0.94) 100%)",
       }}
     />
     <GlassFilter />
