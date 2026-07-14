@@ -31,9 +31,9 @@ export default function ScrollVideoStory() {
 
   const [videoOk, setVideoOk] = useState(true);
 
-  // Live scroll target shared between the rAF scrubber and ScrollTrigger.
-  const targetTime = useRef(0);
-  const duration = useRef(0);
+  // Playback mode driven by scroll direction: one scroll down plays the video
+  // forward; one scroll up plays it in reverse.
+  const mode = useRef<"idle" | "forward" | "reverse">("idle");
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -98,15 +98,16 @@ export default function ScrollVideoStory() {
       resizeObserver.observe(stage);
       video.addEventListener("loadedmetadata", layout);
 
-      // Smoothly scrub the video toward the scroll-derived target time.
-      const tick = () => {
-        if (duration.current > 0) {
-          const cur = video.currentTime;
-          const diff = targetTime.current - cur;
-          // Only seek when the gap is meaningful — avoids redundant seeks/jank.
-          if (Math.abs(diff) > 0.01 && !video.seeking) {
-            video.currentTime = cur + diff * 0.2;
-          }
+      // Forward playback uses native play(); reverse playback steps
+      // currentTime backwards each frame (browsers can't play() in reverse).
+      let lastT = performance.now();
+      const tick = (now: number) => {
+        const dt = Math.min((now - lastT) / 1000, 0.1);
+        lastT = now;
+        if (mode.current === "reverse" && video.readyState >= 2 && !video.seeking) {
+          const next = Math.max(0, video.currentTime - dt);
+          video.currentTime = next;
+          if (next <= 0) mode.current = "idle";
         }
         renderer.render(scene, camera);
         raf = requestAnimationFrame(tick);
@@ -124,16 +125,30 @@ export default function ScrollVideoStory() {
       };
     }
 
-    // Scroll drives the video's target time (and grime in fallback mode).
+    // Scroll direction picks the playback direction (grime in fallback mode).
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
       onUpdate: (self) => {
-        const p = self.progress;
-        targetTime.current = p * duration.current;
-        if (grimeRef.current) grimeRef.current.style.opacity = `${clamp(p * 1.05)}`;
+        if (grimeRef.current)
+          grimeRef.current.style.opacity = `${clamp(self.progress * 1.05)}`;
+        if (!video) return;
+        if (self.direction === 1 && mode.current !== "forward") {
+          mode.current = "forward";
+          video.play().catch(() => {});
+        } else if (self.direction === -1 && mode.current !== "reverse") {
+          mode.current = "reverse";
+          video.pause();
+        }
+      },
+      onLeave: () => {
+        mode.current = "idle";
+        video?.pause();
+      },
+      onLeaveBack: () => {
+        mode.current = "idle";
+        video?.pause();
       },
     });
 
@@ -143,19 +158,13 @@ export default function ScrollVideoStory() {
     };
   }, [videoOk]);
 
-  const onLoaded = () => {
-    const v = videoRef.current;
-    if (v && v.duration && isFinite(v.duration)) {
-      duration.current = v.duration;
-    }
-  };
-
   return (
     <section
       ref={sectionRef}
       id="story"
-      // 1200vh keeps the slowed-down scrub pacing.
-      className="relative h-[1200vh] w-full"
+      // Long enough to stay pinned while the clip plays, short enough to
+      // pass with a couple of scrolls.
+      className="relative h-[300vh] w-full"
       aria-label="Scroll-driven RO service video"
     >
       {/* Pinned stage — no background of its own; the video covers it */}
@@ -176,7 +185,6 @@ export default function ScrollVideoStory() {
               preload="auto"
               disableRemotePlayback
               crossOrigin="anonymous"
-              onLoadedMetadata={onLoaded}
               onError={() => setVideoOk(false)}
             />
           </>
