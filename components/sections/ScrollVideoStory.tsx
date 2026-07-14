@@ -73,13 +73,11 @@ export default function ScrollVideoStory() {
       texture.magFilter = LinearFilter;
       texture.colorSpace = SRGBColorSpace;
 
-      // Starts fully transparent over the black stage: the section blends
-      // seamlessly out of the black hero, then the video fades in on scroll.
+      // Fully opaque throughout — the purifier is visible the moment the
+      // section is in view and stays visible at the end (no fade in/out).
       videoMaterial = new MeshBasicMaterial({
         map: texture,
         toneMapped: false,
-        transparent: true,
-        opacity: 0,
       });
       const plane = new Mesh(new PlaneGeometry(1, 1), videoMaterial);
       scene.add(plane);
@@ -165,12 +163,8 @@ export default function ScrollVideoStory() {
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
-        // Fade the video in from black over the first 8% of the scroll so the
-        // hand-off from the black hero is invisible. NO fade-out: the clip
-        // holds fully visible on its final frame at the end.
-        if (videoMaterial) {
-          videoMaterial.opacity = clamp(p / 0.08);
-        }
+        // No opacity fade — the purifier stays fully visible from the first
+        // frame through the last.
         if (grimeRef.current) grimeRef.current.style.opacity = `${clamp(p * 1.05)}`;
       },
     });
