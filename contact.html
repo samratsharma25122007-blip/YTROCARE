@@ -18,15 +18,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-  <!-- SVG goo filter for the gooey submit button -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-    <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-      <feBlend in="SourceGraphic" in2="goo" />
-    </filter>
-  </defs></svg>
+  <div class="page-shader" data-shader-bg data-color1="#05070e" data-color2="#20242c" aria-hidden="true"></div>
 
   <!-- HEADER -->
   <header class="site-header solid" id="siteHeader">
@@ -50,7 +42,7 @@
   </header>
 
   <!-- PAGE HERO -->
-  <section class="page-hero" data-shader-bg data-color1="#000000" data-color2="#333333">
+  <section class="page-hero">
     <div class="container">
       <div class="crumbs"><a href="index.html">Home</a> / Contact</div>
       <h1>Book your RO service</h1>
@@ -111,10 +103,7 @@
                 <label for="bkNotes">Describe the issue (optional)</label>
                 <textarea id="bkNotes" name="notes" rows="3" placeholder="e.g. Low water flow / strange taste / no water"></textarea>
               </div>
-              <button type="submit" class="goo-btn">
-                <span class="goo-label">Request my service →</span>
-                <span class="goo-bg" aria-hidden="true"><span class="pill"></span><b></b><b></b><b></b><b></b><b></b></span>
-              </button>
+              <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Request my service →</button>
               <p class="form-note">Submitting opens WhatsApp with your request pre-filled — just press send. By submitting, you agree to be contacted about your service request; we’ll call to confirm the visit and pricing.</p>
             </form>
           </div>
@@ -152,7 +141,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="section tight cta-band" data-shader-bg data-color1="#000000" data-color2="#333333">
+  <section class="section tight cta-band">
     <div class="container center">
       <h2 class="section-title on-dark reveal">Prompt, dependable RO service</h2>
       <p class="lead on-dark reveal" style="margin:14px auto 30px">Book now and we’ll restore your purifier to peak performance.</p>

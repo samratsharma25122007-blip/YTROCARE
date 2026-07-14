@@ -121,4 +121,28 @@ const PLACEHOLDERS = {
       form.reset();
     });
   }
+
+  /* ---------- Gooey effect on every button ---------- */
+  // Inject the shared SVG goo filter once (used by .btn .goo-bg in CSS).
+  if (!document.getElementById('goo')) {
+    document.body.insertAdjacentHTML('beforeend',
+      '<svg width="0" height="0" aria-hidden="true" style="position:absolute">' +
+      '<defs><filter id="goo" x="-50%" y="-50%" width="200%" height="200%">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>' +
+      '<feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="g"/>' +
+      '<feBlend in="SourceGraphic" in2="g"/></filter></defs></svg>');
+  }
+  // Wrap each button's contents in a label and add rising bubbles.
+  document.querySelectorAll('.btn').forEach((btn) => {
+    if (btn.dataset.goo) return;
+    btn.dataset.goo = '1';
+    const label = document.createElement('span');
+    label.className = 'goo-label';
+    while (btn.firstChild) label.appendChild(btn.firstChild);
+    const bg = document.createElement('span');
+    bg.className = 'goo-bg';
+    bg.setAttribute('aria-hidden', 'true');
+    bg.innerHTML = '<b></b><b></b><b></b><b></b><b></b>';
+    btn.append(label, bg);
+  });
 })();
