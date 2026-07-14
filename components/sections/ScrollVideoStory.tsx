@@ -104,7 +104,18 @@ export default function ScrollVideoStory() {
 
       const resizeObserver = new ResizeObserver(layout);
       resizeObserver.observe(stage);
-      video.addEventListener("loadedmetadata", layout);
+
+      // Metadata may already be loaded before this effect runs (the element
+      // starts fetching during SSR HTML parse), so read it directly AND
+      // listen — otherwise duration stays 0 and the scrub never moves.
+      const onMeta = () => {
+        if (video.duration && isFinite(video.duration)) {
+          duration.current = video.duration;
+        }
+        layout();
+      };
+      if (video.readyState >= 1) onMeta();
+      video.addEventListener("loadedmetadata", onMeta);
 
       // Smoothly scrub the video toward the scroll-derived target time.
       const tick = () => {
@@ -116,6 +127,11 @@ export default function ScrollVideoStory() {
             video.currentTime = cur + diff * 0.35;
           }
         }
+        // Re-upload the current frame every tick: the hidden video never
+        // "presents" frames to the compositor, so three.js's automatic
+        // requestVideoFrameCallback path never fires and the texture would
+        // stay black without this.
+        if (video.readyState >= 2) texture.needsUpdate = true;
         renderer.render(scene, camera);
         raf = requestAnimationFrame(tick);
       };
@@ -124,7 +140,7 @@ export default function ScrollVideoStory() {
       disposeThree = () => {
         cancelAnimationFrame(raf);
         resizeObserver.disconnect();
-        video.removeEventListener("loadedmetadata", layout);
+        video.removeEventListener("loadedmetadata", onMeta);
         texture.dispose();
         plane.geometry.dispose();
         (plane.material as MeshBasicMaterial).dispose();
@@ -156,13 +172,6 @@ export default function ScrollVideoStory() {
     };
   }, [videoOk]);
 
-  const onLoaded = () => {
-    const v = videoRef.current;
-    if (v && v.duration && isFinite(v.duration)) {
-      duration.current = v.duration;
-    }
-  };
-
   return (
     <section
       ref={sectionRef}
@@ -189,7 +198,6 @@ export default function ScrollVideoStory() {
               preload="auto"
               disableRemotePlayback
               crossOrigin="anonymous"
-              onLoadedMetadata={onLoaded}
               onError={() => setVideoOk(false)}
             />
           </>
