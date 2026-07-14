@@ -119,22 +119,18 @@ export default function ScrollVideoStory() {
       if (video.readyState >= 1) onMeta();
       video.addEventListener("loadedmetadata", onMeta);
 
-      // Smoothly scrub the video toward the scroll-derived target time.
-      // A low, frame-rate-normalised lerp gives buttery motion; the render
-      // loop itself runs every animation frame (60/120/144Hz per display),
-      // so on a 120Hz screen the scrub updates ~120×/second.
-      let smoothed = 0;
-      let last = performance.now();
-      const tick = (now: number) => {
-        const dt = Math.min((now - last) / 1000, 0.05);
-        last = now;
+      // Seek the video straight to the scroll-mapped time — but only when the
+      // decoder is idle. Issuing a new seek while `video.seeking` is still true
+      // makes seeks queue up and fall behind the scroll: that backlog is what
+      // reads as "lag". Waiting for each seek to finish keeps it locked to the
+      // scroll. GSAP `scrub` (below) provides the only smoothing, so there is
+      // no second easing stage to trail behind.
+      const tick = () => {
         if (duration.current > 0 && !video.seeking) {
-          // Frame-rate-independent smoothing — tuned to glide yet stay tight
-          // (settles in well under a second so it never feels laggy).
-          const k = 1 - Math.pow(0.0006, dt);
-          smoothed += (targetTime.current - smoothed) * k;
-          if (Math.abs(smoothed - video.currentTime) > 0.004) {
-            video.currentTime = smoothed;
+          const target = targetTime.current;
+          // Skip sub-frame diffs to avoid redundant decodes (~1 frame @30fps).
+          if (Math.abs(target - video.currentTime) > 0.033) {
+            video.currentTime = target;
           }
         }
         // Re-upload the current frame every tick: the hidden video never
@@ -158,13 +154,14 @@ export default function ScrollVideoStory() {
       };
     }
 
-    // Scroll position drives the video's target time. A moderate scrub
-    // catch-up (0.7s) eases the progress fluidly without feeling laggy.
+    // Scroll position drives the video's target time. A short scrub catch-up
+    // (0.3s) keeps a touch of smoothing while staying tight to the scroll so
+    // the frame never trails behind and feels laggy.
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.7,
+      scrub: 0.3,
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
