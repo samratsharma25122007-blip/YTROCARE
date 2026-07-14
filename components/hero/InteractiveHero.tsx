@@ -373,7 +373,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
   return (
     <section
       id="home"
-      className={`relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#b7b7b7] ${className}`}
+      className={`relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#000000] ${className}`}
     >
       {/* Interactive ballpit background */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0 h-full w-full" />
@@ -384,7 +384,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "radial-gradient(70% 55% at 50% 48%, rgba(183,183,183,0.82) 0%, rgba(183,183,183,0.45) 55%, rgba(183,183,183,0) 100%)",
+            "radial-gradient(70% 55% at 50% 48%, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0) 100%)",
         }}
       />
 
@@ -396,7 +396,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           transition={{ duration: 0.8, ease }}
           className="mb-8"
         >
-          <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-brand-ink/10 bg-white/70 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-brand-blue backdrop-blur">
+          <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-cyan-glow backdrop-blur">
             <span className="h-1.5 w-1.5 animate-pulse-glow rounded-full bg-brand-blue" />
             RO Care India
           </span>
@@ -406,7 +406,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           initial={{ opacity: 0, y: 30, filter: "blur(14px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 1, delay: 0.15, ease }}
-          className="max-w-4xl text-balance text-4xl font-bold leading-[1.03] tracking-tightest text-brand-ink sm:text-5xl md:text-6xl lg:text-[4.25rem]"
+          className="max-w-4xl text-balance text-4xl font-bold leading-[1.03] tracking-tightest text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]"
         >
           {heroTitle}
         </motion.h1>
@@ -415,7 +415,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.35, ease }}
-          className="mt-7 max-w-xl text-balance text-lg text-brand-ink/60"
+          className="mt-7 max-w-xl text-balance text-lg text-white/65"
         >
           {heroDescription}
         </motion.p>
@@ -428,14 +428,14 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           className="pointer-events-auto mt-10 flex w-full max-w-md flex-col items-center justify-center gap-3 sm:flex-row"
         >
           <div className="relative w-full">
-            <Icons.phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-ink/40" />
+            <Icons.phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
             <input
               type="tel"
               inputMode="tel"
               placeholder="Enter your phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-full border border-brand-ink/10 bg-white/80 py-3 pl-11 pr-4 font-medium text-brand-ink placeholder-brand-ink/40 backdrop-blur transition-colors hover:border-brand-ink/20 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
+              className="w-full rounded-full border border-white/15 bg-white/10 py-3 pl-11 pr-4 font-medium text-white placeholder-white/40 backdrop-blur transition-colors hover:border-white/30 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/40"
             />
           </div>
           <button
@@ -455,10 +455,10 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
         aria-label="Scroll down"
-        className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-brand-ink/50 transition-colors hover:text-brand-blue"
+        className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/50 transition-colors hover:text-cyan-glow"
       >
         <span className="text-[11px] font-medium uppercase tracking-[0.25em]">Scroll</span>
-        <span className="relative flex h-9 w-5 justify-center rounded-full border border-brand-ink/25">
+        <span className="relative flex h-9 w-5 justify-center rounded-full border border-white/25">
           <span className="mt-1.5 h-1.5 w-1.5 animate-scroll-hint rounded-full bg-brand-blue" />
         </span>
       </motion.button>
