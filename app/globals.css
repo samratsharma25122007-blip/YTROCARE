@@ -83,6 +83,25 @@ body {
   }
 }
 
+/* Liquid-glass animated background — a slowly flowing water surface.
+   Sits behind the transparent content sections; the moveBackground scroll
+   gives the water a gentle, continuous current. */
+.liquid-glass-bg {
+  background-image: url("https://images.unsplash.com/photo-1432251407527-504a6b4174a2?q=80&w=1480&auto=format&fit=crop");
+  background-position: center center;
+  background-repeat: repeat;
+  background-size: 100% auto;
+  animation: moveBackground 60s linear infinite;
+}
+@keyframes moveBackground {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 0% -1000%;
+  }
+}
+
 /* Gooey CTA buttons — a blue pill with bubbles that rise out of it and
    merge back gooily (SVG #goo filter defined in the root layout). */
 .gooey-button {

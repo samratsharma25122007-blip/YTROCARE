@@ -18,7 +18,7 @@ export default function ServiceProcess() {
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section className="relative overflow-hidden bg-brand-black py-28 md:py-40">
+    <section className="relative overflow-hidden py-28 md:py-40">
       <div className="relative mx-auto max-w-content px-6 md:px-10">
         <SectionHeading
           eyebrow="How It Works"
