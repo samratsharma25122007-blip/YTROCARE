@@ -31,7 +31,7 @@ const FRAG = `
     n = n * 0.5 + 0.5;
 
     vec3 col = mix(uC1, uC2, clamp(n, 0.0, 1.0));
-    col = mix(col, vec3(0.80, 0.90, 1.0), pow(n, 3.0) * 0.30);  // subtle glow
+    col = mix(col, vec3(1.0), pow(n, 3.0) * 0.28);  // white highlight (original palette)
 
     // gentle vignette to settle the edges
     float v = smoothstep(1.15, 0.25, length(uv - 0.5) * 1.9);

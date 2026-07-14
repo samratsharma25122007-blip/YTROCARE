@@ -19,11 +19,20 @@
 </head>
 <body>
 
+  <!-- SVG goo filter for the gooey submit button -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </defs></svg>
+
   <!-- HEADER -->
   <header class="site-header solid" id="siteHeader">
     <div class="container">
       <a class="logo" href="index.html">
-        <span class="mark">💧</span>
+        <span class="mark" data-icon="droplet"></span>
         <span class="name"><b>RO</b> Care India<span>We Care Your Water</span></span>
       </a>
       <nav class="main-nav" id="mainNav">
@@ -33,7 +42,7 @@
         <a href="contact.html" class="active">Contact</a>
       </nav>
       <div class="header-cta">
-        <a class="header-phone" href="tel:+919876543210">📞 +91 98765 43210</a>
+        <a class="header-phone" href="tel:+919876543210"><span class="i" data-icon="phone"></span> +91 98765 43210</a>
         <a class="btn btn-primary" href="#book">Book Service Now</a>
         <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span></button>
       </div>
@@ -41,7 +50,7 @@
   </header>
 
   <!-- PAGE HERO -->
-  <section class="page-hero" data-shader-bg data-color1="#05122a" data-color2="#0b3f7a">
+  <section class="page-hero" data-shader-bg data-color1="#000000" data-color2="#333333">
     <div class="container">
       <div class="crumbs"><a href="index.html">Home</a> / Contact</div>
       <h1>Book your RO service</h1>
@@ -102,7 +111,10 @@
                 <label for="bkNotes">Describe the issue (optional)</label>
                 <textarea id="bkNotes" name="notes" rows="3" placeholder="e.g. Low water flow / strange taste / no water"></textarea>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Request my service →</button>
+              <button type="submit" class="goo-btn">
+                <span class="goo-label">Request my service →</span>
+                <span class="goo-bg" aria-hidden="true"><span class="pill"></span><b></b><b></b><b></b><b></b><b></b></span>
+              </button>
               <p class="form-note">Submitting opens WhatsApp with your request pre-filled — just press send. By submitting, you agree to be contacted about your service request; we’ll call to confirm the visit and pricing.</p>
             </form>
           </div>
@@ -114,24 +126,24 @@
           <h2 class="section-title" style="margin-bottom:26px">Prefer to talk?</h2>
 
           <div class="card" style="margin-bottom:18px">
-            <div class="ic">📞</div>
+            <div class="ic" data-icon="phone"></div>
             <h3>Call / WhatsApp</h3>
             <p><a href="tel:+919876543210" style="color:var(--blue);font-weight:700">+91 98765 43210</a><br />Mon–Sun · 8 AM – 9 PM</p>
           </div>
           <div class="card" style="margin-bottom:18px">
-            <div class="ic">✉️</div>
+            <div class="ic" data-icon="mail"></div>
             <h3>Email us</h3>
             <p><a href="mailto:hello@rocareindia.example" style="color:var(--blue);font-weight:700">hello@rocareindia.example</a><br />We reply within a few hours.</p>
           </div>
           <div class="card">
-            <div class="ic">📍</div>
+            <div class="ic" data-icon="pin"></div>
             <h3>Service area</h3>
             <p>Serving homes, offices and industrial plants across the city and nearby regions.</p>
           </div>
 
           <!-- Map placeholder — drop in a Google Maps embed when ready -->
           <div class="img-slot" style="margin-top:18px;min-height:220px">
-            🗺️&nbsp; Map embed goes here<br /><small style="font-weight:500;opacity:.8">(add your Google Maps iframe)</small>
+            <span class="i" data-icon="pin"></span>&nbsp; Map embed goes here<br /><small style="font-weight:500;opacity:.8">(add your Google Maps iframe)</small>
           </div>
         </div>
 
@@ -140,10 +152,10 @@
   </section>
 
   <!-- CTA -->
-  <section class="section tight cta-band">
+  <section class="section tight cta-band" data-shader-bg data-color1="#000000" data-color2="#333333">
     <div class="container center">
-      <h2 class="section-title on-dark reveal">Water can’t wait — and neither should you</h2>
-      <p class="lead on-dark reveal" style="margin:14px auto 30px">Book now and get your purifier back to peak purity.</p>
+      <h2 class="section-title on-dark reveal">Prompt, dependable RO service</h2>
+      <p class="lead on-dark reveal" style="margin:14px auto 30px">Book now and we’ll restore your purifier to peak performance.</p>
       <a class="btn btn-primary btn-lg reveal" href="#book">Back to booking ↑</a>
     </div>
   </section>
@@ -153,20 +165,21 @@
     <div class="container">
       <div class="cols">
         <div>
-          <div class="brand-line"><span class="mark">💧</span><span style="font-weight:800;font-size:19px;color:#fff"><b style="color:var(--blue-bright)">RO</b> Care India</span></div>
+          <div class="brand-line"><span class="mark" data-icon="droplet"></span><span style="font-weight:800;font-size:19px;color:#fff"><b style="color:var(--blue-bright)">RO</b> Care India</span></div>
           <p>We Care Your Water. Expert RO service, repair, installation and AMC for homes, offices and industrial plants.</p>
-          <div class="social"><a href="#" aria-label="Facebook">f</a><a href="#" aria-label="Instagram">◎</a><a href="#" aria-label="WhatsApp">✆</a></div>
+          <div class="social"><a href="#" aria-label="Facebook" data-icon="facebook"></a><a href="#" aria-label="Instagram" data-icon="instagram"></a><a href="#" aria-label="WhatsApp" data-icon="whatsapp"></a></div>
         </div>
         <div><h4>Company</h4><a href="index.html">Home</a><a href="about.html">About Us</a><a href="services.html">Services</a><a href="contact.html">Contact</a></div>
         <div><h4>Services</h4><a href="services.html">RO Service &amp; Repair</a><a href="services.html">Installation</a><a href="services.html">AMC Plans</a><a href="services.html">Commercial RO</a></div>
-        <div><h4>Get in touch</h4><a href="tel:+919876543210">📞 +91 98765 43210</a><a href="mailto:hello@rocareindia.example">✉ hello@rocareindia.example</a><a href="#book">📅 Book a service</a><p style="margin-top:10px">Mon–Sun · 8 AM – 9 PM</p></div>
+        <div><h4>Get in touch</h4><a href="tel:+919876543210"><span class="i" data-icon="phone"></span> +91 98765 43210</a><a href="mailto:hello@rocareindia.example"><span class="i" data-icon="mail"></span> hello@rocareindia.example</a><a href="#book"><span class="i" data-icon="calendar"></span> Book a service</a><p style="margin-top:10px">Mon–Sun · 8 AM – 9 PM</p></div>
       </div>
-      <div class="footer-bottom"><span>© <span id="year"></span> RO Care India. All rights reserved.</span><span>Made with 💧 for cleaner water.</span></div>
+      <div class="footer-bottom"><span>© <span id="year"></span> RO Care India. All rights reserved.</span><span>We Care Your Water.</span></div>
     </div>
   </footer>
 
-  <a class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">✆</a>
+  <a class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp" data-icon="whatsapp"></a>
 
+  <script src="icons.js"></script>
   <script src="app.js"></script>
   <script type="module" src="shader-bg.js"></script>
 </body>
