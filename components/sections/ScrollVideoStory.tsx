@@ -188,9 +188,9 @@ export default function ScrollVideoStory() {
     <section
       ref={sectionRef}
       id="story"
-      // 2x faster than before: ~1 viewport-height of scrubbing (200vh total
+      // Even faster: only ~half a viewport-height of scrubbing (150vh total
       // minus the 100vh sticky pin) plays the whole clip.
-      className="relative h-[200vh] w-full"
+      className="relative h-[150vh] w-full"
       aria-label="Scroll-driven RO service video"
     >
       {/* Pinned stage — no background of its own; the video covers it */}
