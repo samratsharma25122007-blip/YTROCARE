@@ -62,6 +62,14 @@ body {
     background-clip: text;
     color: transparent;
   }
+  .text-gradient-cyan {
+    /* background-image (not the `background` shorthand) so it never resets
+       background-clip and the text-clip survives. */
+    background-image: linear-gradient(118deg, #ffffff 0%, #8fd8ff 52%, #3aa0ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   .glass {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(24px) saturate(140%);
@@ -91,7 +99,10 @@ body {
   background-position: center center;
   background-repeat: repeat;
   background-size: 100% auto;
-  animation: moveBackground 60s linear infinite;
+  /* Crushed to a dark monochrome shimmer so the motion never reads blue. */
+  filter: grayscale(1) brightness(0.32) contrast(1.05);
+  opacity: 0.5;
+  animation: moveBackground 70s linear infinite;
 }
 @keyframes moveBackground {
   from {

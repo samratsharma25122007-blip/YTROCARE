@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Scene,
   OrthographicCamera,
@@ -18,8 +19,9 @@ import { STORY_VIDEO_SRC } from "@/lib/data";
 /**
  * The centrepiece. A pinned, full-viewport section where the story video is
  * rendered through Three.js as a WebGL texture and scrubbed frame-by-frame by
- * scroll — forward on scroll-down, backward on scroll-up. The video fills the
- * screen ("cover" fit) and brings its own background; no overlays, no text.
+ * scroll — forward on scroll-down, backward on scroll-up, holding on the
+ * final frame at the end. The video fills the screen ("cover" fit); an
+ * elegant editorial headline sits on the left over a soft scrim.
  * If the video asset isn't present, a CSS purifier carries the section.
  */
 export default function ScrollVideoStory() {
@@ -118,13 +120,20 @@ export default function ScrollVideoStory() {
       video.addEventListener("loadedmetadata", onMeta);
 
       // Smoothly scrub the video toward the scroll-derived target time.
-      const tick = () => {
-        if (duration.current > 0) {
-          const cur = video.currentTime;
-          const diff = targetTime.current - cur;
-          // Only seek when the gap is meaningful — avoids redundant seeks/jank.
-          if (Math.abs(diff) > 0.01 && !video.seeking) {
-            video.currentTime = cur + diff * 0.35;
+      // A low, frame-rate-normalised lerp gives buttery motion; the render
+      // loop itself runs every animation frame (60/120/144Hz per display),
+      // so on a 120Hz screen the scrub updates ~120×/second.
+      let smoothed = 0;
+      let last = performance.now();
+      const tick = (now: number) => {
+        const dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        if (duration.current > 0 && !video.seeking) {
+          // Frame-rate-independent smoothing: ~92% closed per 1/60s.
+          const k = 1 - Math.pow(0.0008, dt);
+          smoothed += (targetTime.current - smoothed) * k;
+          if (Math.abs(smoothed - video.currentTime) > 0.005) {
+            video.currentTime = smoothed;
           }
         }
         // Re-upload the current frame every tick: the hidden video never
@@ -148,19 +157,21 @@ export default function ScrollVideoStory() {
       };
     }
 
-    // Scroll position drives the video's target time (grime in fallback mode).
+    // Scroll position drives the video's target time. `scrub: 1` eases the
+    // progress with a ~1s catch-up for an expensive, silky feel.
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
+      scrub: 1,
       onUpdate: (self) => {
         const p = self.progress;
         targetTime.current = p * duration.current;
-        // Fade the video in from black over the first 10% of the scroll and
-        // back to black over the last 6% — both page seams become invisible.
+        // Fade the video in from black over the first 8% of the scroll so the
+        // hand-off from the black hero is invisible. NO fade-out: the clip
+        // holds fully visible on its final frame at the end.
         if (videoMaterial) {
-          videoMaterial.opacity = Math.min(1, clamp(p / 0.1), clamp((1 - p) / 0.06));
+          videoMaterial.opacity = clamp(p / 0.08);
         }
         if (grimeRef.current) grimeRef.current.style.opacity = `${clamp(p * 1.05)}`;
       },
@@ -205,10 +216,50 @@ export default function ScrollVideoStory() {
 
         {/* CSS fallback purifier that "ages" — used when no video is present */}
         {!videoOk && (
-          <div className="relative z-10 flex h-full w-full items-center justify-center bg-brand-ink">
+          <div className="relative z-10 flex h-full w-full items-center justify-center bg-black">
             <AgeingPurifier grimeRef={grimeRef} />
           </div>
         )}
+
+        {/* Left legibility scrim — fades to transparent well before the
+            centre, so it darkens the text column without touching the
+            purifier on the right. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-20"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.72) 16%, rgba(0,0,0,0.34) 34%, transparent 52%)",
+          }}
+        />
+
+        {/* Left-side editorial copy — small, elegant, never over the subject */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-30 flex max-w-[86%] items-center px-6 sm:max-w-[58%] md:max-w-[42%] md:px-12 lg:max-w-[34%] lg:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-25% 0px -25% 0px" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            // Soft shadow keeps the copy legible over any video brightness.
+            style={{ textShadow: "0 2px 22px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.6)" }}
+          >
+            <span className="mb-4 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.32em] text-cyan-glow">
+              <span className="h-1 w-1 rounded-full bg-cyan-glow shadow-[0_0_10px_2px_rgba(95,211,255,0.7)]" />
+              The Cost of Waiting
+            </span>
+            <h2 className="font-serif text-[1.9rem] leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-[2.9rem]">
+              Skip a service,
+              <br />
+              <span className="text-gradient-cyan italic">and it turns on you.</span>
+            </h2>
+            <p className="mt-5 max-w-sm text-[13.5px] leading-relaxed text-white/65 sm:text-sm">
+              Left unserviced, sediment chokes the RO membrane and your TDS
+              creeps back up. Carbon exhausts, tanks grow biofilm, and the flow
+              slows to a trickle. Water starts tasting flat and metallic — and
+              the filters your family trusts quietly stop protecting them.
+            </p>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
