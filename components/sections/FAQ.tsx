@@ -10,7 +10,7 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative overflow-hidden bg-brand-black py-28 md:py-40">
+    <section id="faq" className="relative overflow-hidden py-28 md:py-40">
       <div className="relative mx-auto max-w-content px-6 md:px-10">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="lg:sticky lg:top-32 lg:self-start">

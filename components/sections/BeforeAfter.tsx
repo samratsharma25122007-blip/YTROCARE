@@ -27,7 +27,7 @@ export default function BeforeAfter() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-brand-ink py-28 md:py-40">
+    <section className="relative overflow-hidden py-28 md:py-40">
       <div className="relative mx-auto max-w-content px-6 md:px-10">
         <SectionHeading
           eyebrow="See The Change"

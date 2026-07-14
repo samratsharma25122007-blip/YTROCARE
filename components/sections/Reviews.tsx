@@ -20,7 +20,7 @@ export default function Reviews() {
   return (
     <section
       id="reviews"
-      className="relative overflow-hidden bg-brand-black py-28 md:py-40"
+      className="relative overflow-hidden py-28 md:py-40"
     >
       <div
         aria-hidden

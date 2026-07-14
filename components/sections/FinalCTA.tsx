@@ -9,7 +9,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function FinalCTA() {
   return (
-    <section className="relative flex min-h-[90svh] items-center justify-center overflow-hidden bg-brand-black py-32">
+    <section className="relative flex min-h-[90svh] items-center justify-center overflow-hidden py-32">
       {/* Subtle dust lingering from the story */}
       <Particles count={50} color="150,160,175" maxSize={1.6} speed={0.1} />
       <div

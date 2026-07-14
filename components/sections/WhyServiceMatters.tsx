@@ -9,7 +9,7 @@ export default function WhyServiceMatters() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-brand-ink py-28 md:py-40"
+      className="relative overflow-hidden py-28 md:py-40"
     >
       <div
         aria-hidden
