@@ -13,18 +13,18 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AutoCare — Premium RO Water Purifier Servicing",
+  title: "RO Care India — Premium RO Water Purifier Servicing",
   description:
-    "See what happens inside your RO if you don't service it. Certified engineers, same-day doorstep service, genuine parts. Book your AutoCare RO service today.",
+    "See what happens inside your RO if you don't service it. Certified engineers, same-day doorstep service, genuine parts. Book your RO Care India service today.",
   keywords: [
     "RO service",
     "water purifier servicing",
     "RO repair",
-    "AutoCare",
+    "RO Care India",
     "doorstep RO service",
   ],
   openGraph: {
-    title: "AutoCare — Premium RO Water Purifier Servicing",
+    title: "RO Care India — Premium RO Water Purifier Servicing",
     description:
       "The launch of healthier water. Cinematic, scroll-driven story of what happens inside your RO.",
     type: "website",

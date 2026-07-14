@@ -1,4 +1,4 @@
-# Netlify configuration for the AutoCare static-export Next.js site.
+# Netlify configuration for the RO Care India static-export Next.js site.
 
 [build]
   command = "npm run build"

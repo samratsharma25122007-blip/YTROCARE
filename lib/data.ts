@@ -1,4 +1,4 @@
-/* Centralised content for AutoCare. Keeps components clean and reusable. */
+/* Centralised content for RO Care India. Keeps components clean and reusable. */
 
 export const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -57,7 +57,7 @@ export const SERVICE_COMPONENTS = [
 
 export const PROCESS_STEPS = [
   { title: "Book Service", desc: "Pick a slot in under a minute. No calls, no waiting." },
-  { title: "Engineer Assigned", desc: "A certified AutoCare engineer is matched to your area." },
+  { title: "Engineer Assigned", desc: "A certified RO Care India engineer is matched to your area." },
   { title: "Home Visit", desc: "Doorstep arrival at your preferred time — every time." },
   { title: "Professional Cleaning", desc: "Genuine parts, calibrated tools, meticulous care." },
   { title: "Water Testing", desc: "TDS and flow verified in front of you." },
@@ -141,7 +141,7 @@ export const REVIEWS = [
     role: "Delhi",
     rating: 5,
     quote:
-      "The whole experience is premium — from the booking page to the doorstep. AutoCare has earned a customer for life.",
+      "The whole experience is premium — from the booking page to the doorstep. RO Care India has earned a customer for life.",
     avatar: "VS",
   },
 ] as const;
@@ -186,11 +186,11 @@ export const FAQS = [
 export const CONTACT = {
   phone: "+91 98765 43210",
   whatsapp: "+91 98765 43210",
-  email: "care@autocare.in",
+  email: "rocareindia123@gmail.com",
 } as const;
 
 /**
  * Path to the scroll-scrubbed story video.
  * Drop your rendered clip at: public/videos/ro-story.mp4
  */
-export const STORY_VIDEO_SRC = "/videos/ro-story.mp4";
+export const STORY_VIDEO_SRC = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/videos/ro-story.mp4`;

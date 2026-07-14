@@ -4,7 +4,7 @@ import Particles from "@/components/ui/Particles";
 import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
-  title: "Book Your RO Service — AutoCare",
+  title: "Book Your RO Service — RO Care India",
   description:
     "Book a premium, certified RO water purifier service at your doorstep. Same-day slots available.",
 };

@@ -1,4 +1,4 @@
-import Hero from "@/components/hero/Hero";
+import InteractiveHero from "@/components/hero/InteractiveHero";
 import ScrollVideoStory from "@/components/sections/ScrollVideoStory";
 import WhyServiceMatters from "@/components/sections/WhyServiceMatters";
 import ServiceIncluded from "@/components/sections/ServiceIncluded";
@@ -13,7 +13,7 @@ import FinalCTA from "@/components/sections/FinalCTA";
 export default function Home() {
   return (
     <>
-      <Hero />
+      <InteractiveHero />
       <ScrollVideoStory />
       <WhyServiceMatters />
       <ServiceIncluded />

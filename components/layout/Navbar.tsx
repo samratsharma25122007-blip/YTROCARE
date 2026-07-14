@@ -30,6 +30,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const onDark = scrolled || menuOpen;
+
   const handleNav = (href: string) => (e: React.MouseEvent) => {
     if (href.startsWith("#")) {
       e.preventDefault();
@@ -56,9 +58,9 @@ export default function Navbar() {
           <Link
             href="/#home"
             onClick={handleNav("#home")}
-            aria-label="AutoCare home"
+            aria-label="RO Care India home"
           >
-            <Logo dark />
+            <Logo dark={onDark} />
           </Link>
 
           {/* Desktop links */}
@@ -68,7 +70,11 @@ export default function Navbar() {
                 key={link.href}
                 href={`/${link.href}`}
                 onClick={handleNav(link.href)}
-                className="group relative text-sm font-medium text-white/70 transition-colors duration-300 hover:text-white"
+                className={`group relative text-sm font-medium transition-colors duration-300 ${
+                  onDark
+                    ? "text-white/70 hover:text-white"
+                    : "text-brand-ink/70 hover:text-brand-ink"
+                }`}
               >
                 {link.label}
                 <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-cyan-glow transition-all duration-300 ease-out-expo group-hover:w-full" />
@@ -87,21 +93,23 @@ export default function Navbar() {
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white lg:hidden"
+              className={`relative flex h-10 w-10 items-center justify-center rounded-full border lg:hidden ${
+                onDark ? "border-white/15 text-white" : "border-brand-ink/15 text-brand-ink"
+              }`}
             >
               <span className="sr-only">Menu</span>
               <div className="flex flex-col gap-1.5">
                 <motion.span
                   animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-                  className="block h-px w-5 bg-white"
+                  className={`block h-px w-5 ${onDark ? "bg-white" : "bg-brand-ink"}`}
                 />
                 <motion.span
                   animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-                  className="block h-px w-5 bg-white"
+                  className={`block h-px w-5 ${onDark ? "bg-white" : "bg-brand-ink"}`}
                 />
                 <motion.span
                   animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-                  className="block h-px w-5 bg-white"
+                  className={`block h-px w-5 ${onDark ? "bg-white" : "bg-brand-ink"}`}
                 />
               </div>
             </button>
