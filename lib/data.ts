@@ -193,4 +193,4 @@ export const CONTACT = {
  * Path to the scroll-scrubbed story video.
  * Drop your rendered clip at: public/videos/ro-story.mp4
  */
-export const STORY_VIDEO_SRC = "/videos/ro-story.mp4";
+export const STORY_VIDEO_SRC = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/videos/ro-story.mp4`;
